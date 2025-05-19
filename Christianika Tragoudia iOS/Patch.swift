@@ -9,18 +9,17 @@ import Foundation
 
 
 class Patch: Decodable {
-
     let timestamp: Int
     let songIdSet: Set<Int>
     let chordIdSet: Set<Int>
-    let songList: Array<Song>
-    let chordList: Array<Chord>
+    let songList: [Song]
+    let chordList: [Chord]
     
     static let domain: String = "christianikatragoudia.gr"
     static let email: String = "info@christianikatragoudia.gr"
     static let home: String = "https://christianikatragoudia.gr/"
     
-    init(timestamp: Int, songIdSet: Set<Int>, chordIdSet: Set<Int>, songList: Array<Song>, chordList: Array<Chord>) {
+    init(timestamp: Int, songIdSet: Set<Int>, chordIdSet: Set<Int>, songList: [Song], chordList: [Chord]) {
         self.timestamp = timestamp
         self.songIdSet = songIdSet
         self.chordIdSet = chordIdSet

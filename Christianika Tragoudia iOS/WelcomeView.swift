@@ -8,103 +8,102 @@
 import SwiftUI
 
 
-enum WelcomeState {
-    case starting
-    case loading
-    case prompting
+private enum ViewState {
+    case START
+    case READY
+    case DOWNLOAD
 }
 
 
 struct WelcomeView: View {
     @Binding var passed: Bool
-    
-    @State var state: WelcomeState = .starting
 
+    @State private var state: ViewState = .START
+    
     var body: some View {
-        if #available(iOS 16.0, *) {
-            NavigationStack {
-                WelcomeMain(passed: $passed, state: $state)
-            }
-        } else {
-            NavigationView {
-                WelcomeMain(passed: $passed, state: $state)
-            }
-        }
+        MainView(passed: $passed, state: $state)
     }
 }
 
 
-private struct WelcomeMain: View {
+private struct MainView: View {
     @Binding var passed: Bool
-    @Binding var state: WelcomeState
+    @Binding var state: ViewState
     
-    @State var errorVisible: Bool = false
+    @State private var errorVisible: Bool = false
     
     var body: some View {
+        if #available(iOS 16.0, *) {
+            NavigationStack(root: navigationContent)
+        } else {
+            NavigationView(content: navigationContent)
+        }
+    }
+    
+    private func navigationContent() -> some View {
         ZStack {
             BackgroundView()
             switch state {
-            case .starting:
+            case .START:
                 ProgressView()
                     .task {
                         let db = TheDatabase()
                         passed = Song.count(db: db) > 0
-                        state = .prompting
+                        state = .READY
                     }
-            case .loading:
-                ProgressView()
-            case .prompting:
+            case .READY:
                 VStack {
                     Text("DownloadPrompt")
                         .multilineTextAlignment(.center)
                         .padding()
-                    Button("Download", systemImage: "square.and.arrow.down", action: {
-                        Task {
-                            state = .loading
-                            await download()
-                            state = .prompting
-                        }
-                    })
+                    Button("Download", systemImage: "square.and.arrow.down") {
+                        state = .DOWNLOAD
+                    }
                     .buttonStyle(.borderedProminent)
                     .padding()
                 }
-                .toolbar {
-                    ToolbarItemGroup(placement: .bottomBar) {
-                        NavigationLink("Information") {
-                            InformationView()
-                        }
-                        NavigationLink("License") {
-                            LicenseView()
-                        }
-                    }
-                }
+            case .DOWNLOAD:
+                ProgressView()
+                    .task(downloadTask)
             }
         }
         .navigationTitle("AppName")
         .alert("Error", isPresented: $errorVisible, actions: {}, message: {
             Text("DownloadError")
         })
+        .toolbar {
+            ToolbarItemGroup(placement: .bottomBar) {
+                NavigationLink("Information", destination: {
+                    InformationView()
+                })
+                .disabled(state != .READY)
+                NavigationLink("License", destination: {
+                    LicenseView()
+                })
+                .disabled(state != .READY)
+            }
+        }
     }
     
-    private func download() async -> Void {
-        let patch = await Patch.get(after: nil, full: true)
-        if (patch != nil) {
+    @Sendable
+    private func downloadTask() async -> Void {
+        state = .DOWNLOAD
+        if let patch = await Patch.get(after: nil, full: true) {
             let db = TheDatabase()
-            Song.insert(db: db, songList: patch!.songList)
-            SongFts.insert(db: db, ftsList: patch!.songList.map { song in
-                SongFts(song: song)
-            })
+            Song.insert(db: db, songList: patch.songList)
+            SongFts.insert(db: db, ftsList: patch.songList.map({ SongFts(song: $0) }))
             SongFts.optimize(db: db)
-            Chord.insert(db: db, chordList: patch!.chordList)
-            Config.setUpdateTimestamp(db: db, value: patch!.timestamp)
+            Chord.insert(db: db, chordList: patch.chordList)
+            Config.setUpdateTimestamp(db: db, value: patch.timestamp)
             passed = Song.count(db: db) > 0
         } else {
             errorVisible = true
         }
+        state = .READY
     }
 }
 
 
 #Preview {
-    WelcomeView(passed: .constant(false), state: .prompting)
+    MainView(passed: .constant(false), state: .constant(.READY))
 }

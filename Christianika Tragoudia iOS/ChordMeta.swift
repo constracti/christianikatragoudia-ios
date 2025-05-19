@@ -17,6 +17,12 @@ class ChordMeta {
         self.zoom = zoom
     }
     
+    private init(stmt: Statement) {
+        self.id = stmt.readInt(index: 0)
+        self.tonality = stmt.readTonalityNullable(index: 1)
+        self.zoom = stmt.readDouble(index: 2)
+    }
+    
     static func create(db: TheDatabase) {
         let sql = """
             CREATE TABLE IF NOT EXISTS `chord_meta` (
@@ -69,11 +75,7 @@ class ChordMeta {
         if stmt.step() == .DONE {
             return ChordMeta(id: id)
         }
-        return ChordMeta(
-            id: stmt.readInt(index: 0),
-            tonality: stmt.readTonalityNullable(index: 1),
-            zoom: stmt.readDouble(index: 2),
-        )
+        return ChordMeta(stmt: stmt)
     }
     
     func copyWithTonality(tonality: MusicNote?) -> ChordMeta {

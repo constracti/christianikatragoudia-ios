@@ -33,12 +33,34 @@
         }
       }
     },
+    "Check" : {
+      "localizations" : {
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Έλεγχος"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Check"
+          }
+        }
+      }
+    },
     "Details" : {
       "localizations" : {
         "el" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Λεπτομέρειες"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Details"
           }
         }
       }
@@ -56,6 +78,38 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Download"
+          }
+        }
+      }
+    },
+    "DownloadAdd" : {
+      "localizations" : {
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Προσθήκη"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add"
+          }
+        }
+      }
+    },
+    "DownloadEdit" : {
+      "localizations" : {
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Τροποποίηση"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Edit"
           }
         }
       }
@@ -89,6 +143,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Download lyrics and chords\nof all songs from the website"
+          }
+        }
+      }
+    },
+    "DownloadSuccess" : {
+      "localizations" : {
+        "el" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Όλες οι προσθήκες και οι αλλαγές\nστους στίχους και τις συγχορδίες\nτων τραγουδιών της ιστοσελίδας\nέχουν ενσωματωθεί στην εφαρμογή."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "All additions and changes\nto lyrics and chords\nof the website songs\nhave been downloaded."
           }
         }
       }
@@ -445,9 +515,6 @@
         }
       }
     },
-    "loaded" : {
-
-    },
     "Options" : {
       "localizations" : {
         "el" : {
@@ -481,6 +548,7 @@
       }
     },
     "Settings" : {
+      "extractionState" : "stale",
       "localizations" : {
         "el" : {
           "stringUnit" : {
@@ -512,13 +580,8 @@
         }
       }
     },
-    "TODO Tonalities View" : {
-
-    },
-    "TODO Version View" : {
-
-    },
     "Tonalities" : {
+      "extractionState" : "stale",
       "localizations" : {
         "el" : {
           "stringUnit" : {
@@ -647,6 +710,7 @@
       }
     },
     "Version" : {
+      "extractionState" : "stale",
       "localizations" : {
         "el" : {
           "stringUnit" : {

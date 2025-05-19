@@ -7,7 +7,6 @@
 
 
 class Song: Decodable {
-
     let id: Int
     let date: String
     let content: String
@@ -26,7 +25,17 @@ class Song: Decodable {
         self.permalink = permalink
     }
     
-    static func create(db: TheDatabase) {
+    private init(stmt: Statement) {
+        self.id = stmt.readInt(index: 0)
+        self.date = stmt.readString(index: 1)
+        self.content = stmt.readString(index: 2)
+        self.title = stmt.readString(index: 3)
+        self.excerpt = stmt.readString(index: 4)
+        self.modified = stmt.readString(index: 5)
+        self.permalink = stmt.readString(index: 6)
+    }
+    
+    static func create(db: TheDatabase) -> Void {
         let sql = """
             CREATE TABLE IF NOT EXISTS `song` (
                 `id` INTEGER NOT NULL,
@@ -43,7 +52,7 @@ class Song: Decodable {
         stmt.stepDone()
     }
 
-    static func drop(db: TheDatabase) {
+    static func drop(db: TheDatabase) -> Void {
         let sql = "DROP TABLE IF EXISTS `song`"
         let stmt = Statement(db: db, sql: sql)
         stmt.stepDone()
@@ -56,7 +65,7 @@ class Song: Decodable {
         return stmt.readInt(index: 0)
     }
 
-    static func insert(db: TheDatabase, songList: Array<Song>) {
+    static func insert(db: TheDatabase, songList: [Song]) {
         let sql = """
             INSERT INTO `song` (
                 `id`,
@@ -82,6 +91,45 @@ class Song: Decodable {
         }
     }
     
+    static func update(db: TheDatabase, songList: [Song]) {
+        let sql = """
+            UPDATE `song`
+            SET
+                `date` = ?,
+                `content` = ?,
+                `title` = ?,
+                `excerpt` = ?,
+                `modified` = ?,
+                `permalink` = ?
+            WHERE `id` = ?
+            """
+        let stmt = Statement(db: db, sql: sql)
+        for song in songList {
+            stmt.bindString(index: 1, value: song.date)
+            stmt.bindString(index: 2, value: song.content)
+            stmt.bindString(index: 3, value: song.title)
+            stmt.bindString(index: 4, value: song.excerpt)
+            stmt.bindString(index: 5, value: song.modified)
+            stmt.bindString(index: 6, value: song.permalink)
+            stmt.bindInt(index: 7, value: song.id)
+            stmt.stepDone()
+            stmt.reset()
+        }
+    }
+    
+    static func delete(db: TheDatabase, songList: [Song]) {
+        let sql = """
+            DELETE FROM `song`
+            WHERE `id` = ?
+            """
+        let stmt = Statement(db: db, sql: sql)
+        for song in songList {
+            stmt.bindInt(index: 1, value: song.id)
+            stmt.stepDone()
+            stmt.reset()
+        }
+    }
+    
     static func getById(db: TheDatabase, id: Int) -> Song? {
         let sql = """
             SELECT `id`, `date`, `content`, `title`, `excerpt`, `modified`, `permalink`
@@ -93,14 +141,32 @@ class Song: Decodable {
         if stmt.step() == .DONE {
             return nil
         }
-        return Song(
-            id: stmt.readInt(index: 0),
-            date: stmt.readString(index: 1),
-            content: stmt.readString(index: 2),
-            title: stmt.readString(index: 3),
-            excerpt: stmt.readString(index: 4),
-            modified: stmt.readString(index: 5),
-            permalink: stmt.readString(index: 6),
-        )
+        return Song(stmt: stmt)
+    }
+    
+    static func getAll(db: TheDatabase) -> [Song] {
+        let sql = """
+            SELECT `id`, `date`, `content`, `title`, `excerpt`, `modified`, `permalink`
+            FROM `song`
+            """
+        let stmt = Statement(db: db, sql: sql)
+        var list = [Song]()
+        while stmt.step() == .ROW {
+            list.append(Song(stmt: stmt))
+        }
+        return list
+    }
+    
+    static func getAllWithoutContent(db: TheDatabase) -> [Song] {
+        let sql = """
+            SELECT `id`, `date`, '' AS `content`, `title`, `excerpt`, `modified`, `permalink`
+            FROM `song`
+            """
+        let stmt = Statement(db: db, sql: sql)
+        var list = [Song]()
+        while stmt.step() == .ROW {
+            list.append(Song(stmt: stmt))
+        }
+        return list
     }
 }

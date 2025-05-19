@@ -7,7 +7,6 @@
 
 
 class SongFts {
-    
     let rowid: Int
     let title: String
     let content: String
@@ -41,7 +40,7 @@ class SongFts {
         stmt.stepDone()
     }
     
-    static func insert(db: TheDatabase, ftsList: Array<SongFts>) {
+    static func insert(db: TheDatabase, ftsList: [SongFts]) {
         let sql = """
             INSERT INTO `song_fts` (
                 `rowid`,
@@ -54,6 +53,37 @@ class SongFts {
             stmt.bindInt(index: 1, value: fts.rowid)
             stmt.bindString(index: 2, value: fts.title)
             stmt.bindString(index: 3, value: fts.content)
+            stmt.stepDone()
+            stmt.reset()
+        }
+    }
+    
+    static func update(db: TheDatabase, ftsList: [SongFts]) {
+        let sql = """
+            UPDATE `song_fts`
+            SET
+                `title` = ?,
+                `content` = ?
+            WHERE `rowid` = ?
+            """
+        let stmt = Statement(db: db, sql: sql)
+        for fts in ftsList {
+            stmt.bindString(index: 1, value: fts.title)
+            stmt.bindString(index: 2, value: fts.content)
+            stmt.bindInt(index: 3, value: fts.rowid)
+            stmt.stepDone()
+            stmt.reset()
+        }
+    }
+    
+    static func delete(db: TheDatabase, ftsList: [SongFts]) {
+        let sql = """
+            DELETE FROM `song_fts`
+            WHERE `rowid` = ?
+            """
+        let stmt = Statement(db: db, sql: sql)
+        for fts in ftsList {
+            stmt.bindInt(index: 1, value: fts.rowid)
             stmt.stepDone()
             stmt.reset()
         }

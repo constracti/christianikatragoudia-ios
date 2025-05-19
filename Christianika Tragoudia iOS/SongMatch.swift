@@ -9,7 +9,6 @@ import Foundation
 
 
 class SongMatch: Comparable {
-    
     let id: Int
     let title: String
     let excerpt: String
@@ -27,6 +26,15 @@ class SongMatch: Comparable {
         self.title = title
         self.excerpt = excerpt
         self.score = SongMatch.getScore(matchinfo: matchinfo)
+    }
+    
+    private convenience init(stmt: Statement) {
+        self.init(
+            id: stmt.readInt(index: 0),
+            title: stmt.readString(index: 1),
+            excerpt: stmt.readString(index: 2),
+            matchinfo: stmt.readData(index: 3),
+        )
     }
     
     static func <=> (lhs: SongMatch, rhs: SongMatch) -> Spaceship? {
@@ -73,7 +81,7 @@ class SongMatch: Comparable {
         return score
     }
     
-    static func getByQuery(db: TheDatabase, query: String) -> Array<SongMatch> {
+    static func getByQuery(db: TheDatabase, query: String) -> [SongMatch] {
         let sql = """
             SELECT `song`.`id`, `song`.`title`, `song`.`excerpt`, matchinfo(`song_fts`) as `matchinfo`
             FROM `song_fts`
@@ -81,16 +89,11 @@ class SongMatch: Comparable {
             JOIN `chord` ON `chord`.`parent` = `song`.`id`
             WHERE `song_fts` MATCH ?
             """
-        var list = Array<SongMatch>()
+        var list = [SongMatch]()
         let stmt = Statement(db: db, sql: sql)
         stmt.bindString(index: 1, value: query)
         while stmt.step() == .ROW {
-            list.append(SongMatch(
-                id: stmt.readInt(index: 0),
-                title: stmt.readString(index: 1),
-                excerpt: stmt.readString(index: 2),
-                matchinfo: stmt.readData(index: 3),
-            ))
+            list.append(SongMatch(stmt: stmt))
         }
         return list.sorted()
     }

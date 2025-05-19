@@ -7,7 +7,6 @@
 
 
 class SongTitle: Identifiable, Comparable {
-    
     let id: Int
     let title: String
     let excerpt: String
@@ -25,8 +24,20 @@ class SongTitle: Identifiable, Comparable {
         }
     }
     
+    convenience init(song: Song) {
+        self.init(id: song.id, title: song.title, excerpt: song.excerpt)
+    }
+    
     convenience init(songMatch: SongMatch) {
         self.init(id: songMatch.id, title: songMatch.title, excerpt: songMatch.excerpt)
+    }
+    
+    private convenience init(stmt: Statement) {
+        self.init(
+            id: stmt.readInt(index: 0),
+            title: stmt.readString(index: 1),
+            excerpt: stmt.readString(index: 2),
+        )
     }
     
     static func <=> (lhs: SongTitle, rhs: SongTitle) -> Spaceship? {
@@ -41,20 +52,16 @@ class SongTitle: Identifiable, Comparable {
         (lhs <=> rhs) == nil
     }
 
-    static func getAll(db: TheDatabase) -> Array<SongTitle> {
+    static func getAll(db: TheDatabase) -> [SongTitle] {
         let sql = """
             SELECT `song`.`id`, `song`.`title`, `song`.`excerpt`
             FROM `song`
             JOIN `chord` ON `chord`.`parent` = `song`.`id`
             """
-        var list = Array<SongTitle>()
+        var list = [SongTitle]()
         let stmt = Statement(db: db, sql: sql)
         while stmt.step() == .ROW {
-            list.append(SongTitle(
-                id: stmt.readInt(index: 0),
-                title: stmt.readString(index: 1),
-                excerpt: stmt.readString(index: 2),
-            ))
+            list.append(SongTitle(stmt: stmt))
         }
         return list.sorted()
     }

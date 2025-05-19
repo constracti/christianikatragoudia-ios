@@ -7,7 +7,6 @@
 
 
 class Chord: Decodable {
-    
     let id: Int
     let date: String
     let modified: String
@@ -24,7 +23,16 @@ class Chord: Decodable {
         self.tonality = tonality
     }
     
-    static func create(db: TheDatabase) {
+    private init(stmt: Statement) {
+        self.id = stmt.readInt(index: 0)
+        self.date = stmt.readString(index: 1)
+        self.modified = stmt.readString(index: 2)
+        self.parent = stmt.readInt(index: 3)
+        self.content = stmt.readString(index: 4)
+        self.tonality = stmt.readTonality(index: 5)
+    }
+    
+    static func create(db: TheDatabase) -> Void {
         let sql = """
             CREATE TABLE IF NOT EXISTS `chord` (
                 `id` INTEGER NOT NULL,
@@ -41,7 +49,7 @@ class Chord: Decodable {
         stmt.stepDone()
     }
     
-    static func drop(db: TheDatabase) {
+    static func drop(db: TheDatabase) -> Void {
         let sql = "DROP TABLE IF EXISTS `chord`"
         let stmt = Statement(db: db, sql: sql)
         stmt.stepDone()
@@ -54,7 +62,7 @@ class Chord: Decodable {
         return stmt.readInt(index: 0)
     }
     
-    static func insert(db: TheDatabase, chordList: Array<Chord>) {
+    static func insert(db: TheDatabase, chordList: [Chord]) -> Void {
         let sql = """
             INSERT INTO `chord` (
                 `id`,
@@ -78,6 +86,43 @@ class Chord: Decodable {
         }
     }
     
+    static func update(db: TheDatabase, chordList: [Chord]) -> Void {
+        let sql = """
+            UPDATE `chord`
+            SET
+                `date` = ?,
+                `modified` = ?,
+                `parent` = ?,
+                `content` = ?,
+                `tonality` = ?
+            WHERE `id` = ?
+            """
+        let stmt = Statement(db: db, sql: sql)
+        for chord in chordList {
+            stmt.bindString(index: 1, value: chord.date)
+            stmt.bindString(index: 2, value: chord.modified)
+            stmt.bindInt(index: 3, value: chord.parent)
+            stmt.bindString(index: 4, value: chord.content)
+            stmt.bindTonality(index: 5, value: chord.tonality)
+            stmt.bindInt(index: 6, value: chord.id)
+            stmt.stepDone()
+            stmt.reset()
+        }
+    }
+    
+    static func delete(db: TheDatabase, chordList: [Chord]) {
+        let sql = """
+            DELETE FROM `chord`
+            WHERE `id` = ?
+            """
+        let stmt = Statement(db: db, sql: sql)
+        for chord in chordList {
+            stmt.bindInt(index: 1, value: chord.id)
+            stmt.stepDone()
+            stmt.reset()
+        }
+    }
+    
     static func getByParent(db: TheDatabase, parent: Int) -> Chord? {
         let sql = """
             SELECT `id`, `date`, `modified`, `parent`, `content`, `tonality`
@@ -89,13 +134,32 @@ class Chord: Decodable {
         if stmt.step() == .DONE {
             return nil
         }
-        return Chord(
-            id: stmt.readInt(index: 0),
-            date: stmt.readString(index: 1),
-            modified: stmt.readString(index: 2),
-            parent: stmt.readInt(index: 3),
-            content: stmt.readString(index: 4),
-            tonality: stmt.readTonality(index: 5),
-        )
+        return Chord(stmt: stmt)
+    }
+    
+    static func getAll(db: TheDatabase) -> [Chord] {
+        let sql = """
+            SELECT `id`, `date`, `modified`, `parent`, `content`, `tonality`
+            FROM `chord`
+            """
+        let stmt = Statement(db: db, sql: sql)
+        var list = [Chord]()
+        while stmt.step() == .ROW {
+            list.append(Chord(stmt: stmt))
+        }
+        return list
+    }
+    
+    static func getAllWithoutContent(db: TheDatabase) -> [Chord] {
+        let sql = """
+            SELECT `id`, `date`, `modified`, `parent`, '' AS `content`, `tonality`
+            FROM `chord`
+            """
+        let stmt = Statement(db: db, sql: sql)
+        var list = [Chord]()
+        while stmt.step() == .ROW {
+            list.append(Chord(stmt: stmt))
+        }
+        return list
     }
 }

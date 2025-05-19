@@ -14,38 +14,32 @@ struct OptionsView: View {
         ZStack {
             BackgroundView()
             if #available(iOS 16.0, *) {
-                List {
-                    ListContent()
-                }
-                .scrollContentBackground(.hidden)
+                List(content: listContent)
+                    .scrollContentBackground(.hidden)
             } else {
-                List {
-                    ListContent()
-                }
-                .listStyle(.plain)
+                List(content: listContent)
+                    .listStyle(.plain)
             }
         }
         .navigationTitle("Options")
     }
-}
-
-
-private struct ListContent: View {
     
-    var body: some View {
+    @ViewBuilder
+    private func listContent() -> some View {
         // TODO short descriptions under titles
-        Section("Settings") {
-            NavigationLink("Tonalities") {
-                Text("TODO Tonalities View")
-            }
-        }
-        .listRowBackground(itemBackground())
+        // TODO tonalities
+//        Section("Settings") {
+//            NavigationLink("Tonalities") {
+//                Text("Tonalities")
+//            }
+//        }
+//        .listRowBackground(listItemBackground())
         Section("Tools") {
             NavigationLink("Update") {
                 UpdateView()
             }
         }
-        .listRowBackground(itemBackground())
+        .listRowBackground(listItemBackground())
         Section("App") {
             NavigationLink("Information") {
                 InformationView()
@@ -53,15 +47,15 @@ private struct ListContent: View {
             NavigationLink("License") {
                 LicenseView()
             }
-            NavigationLink("Version") {
-                Text("TODO Version View")
-            }
+            // TODO version
+//            NavigationLink("Version") {
+//                Text("Version")
+//            }
         }
-        .listRowBackground(itemBackground())
+        .listRowBackground(listItemBackground())
     }
     
-    @ViewBuilder
-    private func itemBackground() -> some View {
+    private func listItemBackground() -> some View {
         // TODO change color on tap
         Color(UIColor.secondarySystemGroupedBackground).opacity(0.5)
     }

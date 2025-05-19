@@ -19,6 +19,13 @@ class SongMeta {
         self.visited = visited
     }
     
+    private init(stmt: Statement) {
+        self.id = stmt.readInt(index: 0)
+        self.zoom = stmt.readDouble(index: 1)
+        self.starred = stmt.readBool(index: 2)
+        self.visited = stmt.readStringNullable(index: 3)
+    }
+    
     static func create(db: TheDatabase) {
         let sql = """
             CREATE TABLE IF NOT EXISTS `song_meta` (
@@ -75,12 +82,7 @@ class SongMeta {
         if stmt.step() == .DONE {
             return SongMeta(id: id)
         }
-        return SongMeta(
-            id: stmt.readInt(index: 0),
-            zoom: stmt.readDouble(index: 1),
-            starred: stmt.readBool(index: 2),
-            visited: stmt.readStringNullable(index: 3),
-        )
+        return SongMeta(stmt: stmt)
     }
     
     func copyWithZoom(zoom: Double) -> SongMeta {

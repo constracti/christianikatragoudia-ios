@@ -11,9 +11,9 @@ import SQLite3
 
 class TheDatabase {
     
-    static let version: Int = 1
+    static private let version: Int = 1
     
-    static var initialized: Bool = false
+    static private var initialized: Bool = false
 
     // https://www.kodeco.com/6620276-sqlite-with-swift-tutorial-getting-started/
     private var db: OpaquePointer!
@@ -61,7 +61,7 @@ class TheDatabase {
     }
 
     func get() -> OpaquePointer! {
-        return db!
+        return db
     }
 
     deinit {

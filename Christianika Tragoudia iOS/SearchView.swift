@@ -13,25 +13,42 @@ import SwiftUI
 
 
 struct SearchView: View {
-    
-    @State private var query: String = ""
-    @State private var resultList: Array<SongTitle>? = nil
 
     var body: some View {
-        if resultList == nil {
-            ZStack {
-                BackgroundView()
-                ProgressView()
-            }
-            .task(search)
+        MainView()
+    }
+}
+
+
+private struct MainView: View {
+    @State var query: String = ""
+    @State var resultList: [SongTitle]? = nil
+    
+    var body: some View {
+        if #available(iOS 16.0, *) {
+            NavigationStack(root: navigationContent)
         } else {
-            SearchMain(query: $query, resultList: resultList!)
-                .task(id: query, search)
+            NavigationView(content: navigationContent)
         }
     }
     
+    private func navigationContent() -> some View {
+        ZStack {
+            BackgroundView()
+            if resultList == nil {
+                ProgressView()
+                    .task(searchTask)
+            } else {
+                list()
+                    .task(id: query, searchTask)
+            }
+        }
+        .navigationTitle("Search")
+        .toolbar(content: toolbarContent)
+    }
+    
     @Sendable
-    private func search() async -> Void {
+    private func searchTask() async -> Void {
         if query.isEmpty {
             resultList = SongTitle.getAll(db: TheDatabase())
         } else {
@@ -45,65 +62,26 @@ struct SearchView: View {
                 .map { SongTitle(songMatch: $0) }
         }
     }
-}
 
-
-private struct SearchMain: View {
-    @Binding var query: String
-    let resultList: Array<SongTitle>
-    
-    var body: some View {
+    @ViewBuilder
+    private func list() -> some View {
         if #available(iOS 16.0, *) {
-            NavigationStack {
-                ZStack {
-                    BackgroundView()
-                    List(resultList) { result in
-                        ResultRow(result: result)
-                    }
-                    .scrollContentBackground(.hidden)
-                    .searchable(text: $query, prompt: "Search")
-                }
-                .navigationTitle("Search")
-                .toolbar {
-                    ToolbarItem(placement: .topBarTrailing) {
-                        NavigationLink(destination: {
-                            OptionsView()
-                        }, label: {
-                            Label("Options", systemImage: "gearshape")
-                        })
-                    }
-                }
+            List(resultList!) { result in
+                listItem(result: result)
             }
+            .scrollContentBackground(.hidden)
+            .searchable(text: $query, prompt: "Search")
         } else {
-            NavigationView {
-                ZStack {
-                    BackgroundView()
-                    List(resultList) { result in
-                        ResultRow(result: result)
-                    }
-                    .listStyle(.plain)
-                    .searchable(text: $query, prompt: "Search")
-                }
-                .navigationTitle("Search")
-                .toolbar {
-                    ToolbarItem(placement: .topBarTrailing) {
-                        NavigationLink(destination: {
-                            OptionsView()
-                        }, label: {
-                            Label("Options", systemImage: "gearshape")
-                        })
-                    }
-                }
+            List(resultList!) { result in
+                listItem(result: result)
             }
+            .listStyle(.plain)
+            .searchable(text: $query, prompt: "Search")
         }
     }
-}
-
-
-private struct ResultRow: View {
-    let result: SongTitle
     
-    var body: some View {
+    @ViewBuilder
+    private func listItem(result: SongTitle) -> some View {
         NavigationLink {
             SongView(id: result.id)
         } label: {
@@ -116,12 +94,21 @@ private struct ResultRow: View {
                 }
             }
         }
-        .listRowBackground(itemBackground())
+        .listRowBackground(listItemBackground())
     }
     
-    @ViewBuilder
-    private func itemBackground() -> some View {
+    private func listItemBackground() -> some View {
         Color(UIColor.secondarySystemGroupedBackground).opacity(0.5)
+    }
+    
+    private func toolbarContent() -> some ToolbarContent {
+        ToolbarItem(placement: .topBarTrailing) {
+            NavigationLink(destination: {
+                OptionsView()
+            }, label: {
+                Label("Options", systemImage: "gearshape")
+            })
+        }
     }
 }
 
@@ -146,5 +133,5 @@ private struct ResultRow: View {
         SongTitle(id: 15, title: "Είν' ο δρόμος ανοιχτός", excerpt: "Είν' ο δρόμος ανοιχτός"),
         SongTitle(id: 16, title: "Σκυταλοδρόμοι", excerpt: "Σε πίκραναν πολλοί"),
     ]
-    SearchMain(query: .constant(query), resultList: resultList)
+    MainView(query: query, resultList: resultList)
 }
