@@ -256,7 +256,7 @@ private struct MainView: View {
         }).map({ action, resultList in
             (action, resultList.sorted())
         }), id: \.0, content: { action, resultList in
-            Section(action.title) {
+            Section("\(action.title) (\(resultList.count))") {
                 ForEach(resultList) { result in
                     VStack(alignment: .leading) {
                         Text(result.title)
