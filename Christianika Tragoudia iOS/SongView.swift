@@ -11,11 +11,12 @@ import SwiftUI
 struct SongView: View {
     let id: Int
     
-    @State var song: Song? = nil
-    @State var songMeta: SongMeta? = nil
-    @State var chord: Chord? = nil
-    @State var chordMeta: ChordMeta? = nil
-    @State var loading: Bool = true
+    @State private var song: Song? = nil
+    @State private var songMeta: SongMeta? = nil
+    @State private var chord: Chord? = nil
+    @State private var chordMeta: ChordMeta? = nil
+    @State private var hiddenTonalities: Set<MusicNote>? = nil
+    @State private var loading: Bool = true
     
     var body: some View {
         if loading {
@@ -35,6 +36,7 @@ struct SongView: View {
                     return
                 }
                 chordMeta = ChordMeta.getById(db: db, id: chord!.id)
+                hiddenTonalities = Config.getHiddenTonalities(db: db) ?? MusicNote.ENHARMONIC_TONALITIES
                 loading = false
             }
         } else {
@@ -43,6 +45,7 @@ struct SongView: View {
                 songMeta: Binding($songMeta)!,
                 chord: chord!,
                 chordMeta: Binding($chordMeta)!,
+                hiddenTonalities: hiddenTonalities!,
             )
         }
     }
@@ -110,8 +113,9 @@ private struct SongMain: View {
     @Binding var songMeta: SongMeta
     let chord: Chord
     @Binding var chordMeta: ChordMeta
+    let hiddenTonalities: Set<MusicNote>
 
-    @State var infoVisible: Bool = false
+    @State private var infoVisible: Bool = false
     
     var body: some View {
         ZStack {
@@ -127,6 +131,7 @@ private struct SongMain: View {
             SongToolbar(
                 song: song,
                 defaultTonality: chord.tonality,
+                hiddenTonalities: hiddenTonalities,
                 starred: $songMeta.bindStarred(),
                 tonality: $chordMeta.bindTonality(),
                 zoom: chordMeta.tonality == nil ? $songMeta.bindZoom() : $chordMeta.bindZoom(),
@@ -246,6 +251,7 @@ private struct SongChords: View {
 private struct SongToolbar: ToolbarContent {
     let song: Song
     let defaultTonality: MusicNote
+    let hiddenTonalities: Set<MusicNote>
     @Binding var starred: Bool
     @Binding var tonality: MusicNote?
     @Binding var zoom: Double
@@ -279,7 +285,6 @@ private struct SongToolbar: ToolbarContent {
                     Picker("TonalitySelect", selection: $tonality) {
                         ForEach(getTonalityMenuList(), id: \.self) { tonality in
                             Text(getTonalityMenuItem(tonality: tonality))
-                                .tag(tonality)
                         }
                     }
                 }, label: {
@@ -293,7 +298,6 @@ private struct SongToolbar: ToolbarContent {
                     Picker("TonalitySelect", selection: $tonality) {
                         ForEach(getTonalityMenuList(), id: \.self) { tonality in
                             Text(getTonalityMenuItem(tonality: tonality))
-                                .tag(tonality)
                         }
                     }
                 }
@@ -342,7 +346,7 @@ private struct SongToolbar: ToolbarContent {
     
     private func getTonalityMenuList() -> Array<MusicNote?> {
         var tonalities: Array<MusicNote?> = MusicNote.TONALITIES.filter { tonality in
-            !MusicNote.ENHARMONIC_TONALITIES.contains(tonality)
+            !hiddenTonalities.contains(tonality)
         }
         tonalities.insert(nil, at: 0)
         return tonalities
@@ -475,6 +479,7 @@ private struct OptionsMenuContent: View {
                 songMeta: .constant(songMeta),
                 chord: chord,
                 chordMeta: .constant(chordMeta),
+                hiddenTonalities: MusicNote.ENHARMONIC_TONALITIES,
             )
         }
     } else {
@@ -484,6 +489,7 @@ private struct OptionsMenuContent: View {
                 songMeta: .constant(songMeta),
                 chord: chord,
                 chordMeta: .constant(chordMeta),
+                hiddenTonalities: MusicNote.ENHARMONIC_TONALITIES,
             )
         }
     }

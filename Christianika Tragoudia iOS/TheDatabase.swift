@@ -9,6 +9,7 @@ import Foundation
 import SQLite3
 
 
+// TODO make database operations async
 class TheDatabase {
     
     static private let version: Int = 1

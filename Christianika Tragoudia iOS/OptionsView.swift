@@ -26,14 +26,12 @@ struct OptionsView: View {
     
     @ViewBuilder
     private func listContent() -> some View {
-        // TODO short descriptions under titles
-        // TODO tonalities
-//        Section("Settings") {
-//            NavigationLink("Tonalities") {
-//                Text("Tonalities")
-//            }
-//        }
-//        .listRowBackground(listItemBackground())
+        Section("Settings") {
+            NavigationLink("Tonalities") {
+                TonalitiesView()
+            }
+        }
+        .listRowBackground(listItemBackground())
         Section("Tools") {
             NavigationLink("Update") {
                 UpdateView()
@@ -44,13 +42,21 @@ struct OptionsView: View {
             NavigationLink("Information") {
                 InformationView()
             }
-            NavigationLink("License") {
+            NavigationLink(destination: {
                 LicenseView()
+            }, label: {
+                VStack(alignment: .leading) {
+                    Text("License")
+                    Text("LicenseShort")
+                        .font(.caption)
+                }
+            })
+            // TODO version view
+            HStack {
+                Text("Version")
+                Spacer()
+                Text("1.0")
             }
-            // TODO version
-//            NavigationLink("Version") {
-//                Text("Version")
-//            }
         }
         .listRowBackground(listItemBackground())
     }

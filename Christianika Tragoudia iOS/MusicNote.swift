@@ -6,7 +6,7 @@
 //
 
 
-class MusicNote: Identifiable, Hashable, Decodable {
+class MusicNote: Identifiable, Hashable, Decodable, Encodable {
     let step: MusicStep
     let alter: MusicAlter
     
@@ -43,6 +43,10 @@ class MusicNote: Identifiable, Hashable, Decodable {
     required convenience init(from decoder: any Decoder) throws {
         let notation = try String(from: decoder)
         self.init(notation: notation)!
+    }
+    
+    func encode(to encoder: any Encoder) throws {
+        try notation.encode(to: encoder)
     }
     
     static let TONALITIES: Array<MusicNote> = MusicStep.allCases.flatMap { step in

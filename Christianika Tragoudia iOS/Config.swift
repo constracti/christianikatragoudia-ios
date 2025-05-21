@@ -73,6 +73,7 @@ class Config {
     private enum KEY: String {
         case VERSION = "version"
         case UPDATE_TIMESTAMP = "update_timestamp"
+        case HIDDEN_TONALITIES = "hidden_tonalities"
     }
 
     private static func decode<T: Decodable>(value: String?) -> T? {
@@ -93,7 +94,7 @@ class Config {
         return decode(value: config?.value)
     }
     
-    private static func set<T: Encodable>(db: TheDatabase, key: KEY, value: T) {
+    private static func set<T: Encodable>(db: TheDatabase, key: KEY, value: T?) {
         let config = Config(key: key.rawValue, value: encode(value: value))
         config.upsert(db: db)
     }
@@ -112,5 +113,13 @@ class Config {
     
     static func setUpdateTimestamp(db: TheDatabase, value: Int?) {
         set(db: db, key: .UPDATE_TIMESTAMP, value: value)
+    }
+    
+    static func getHiddenTonalities(db: TheDatabase) -> Set<MusicNote>? {
+        get(db: db, key: .HIDDEN_TONALITIES)
+    }
+    
+    static func setHiddenTonalities(db: TheDatabase, value: Set<MusicNote>?) {
+        set(db: db, key: .HIDDEN_TONALITIES, value: value)
     }
 }
