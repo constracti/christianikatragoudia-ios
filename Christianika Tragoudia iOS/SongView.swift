@@ -263,41 +263,40 @@ private struct SongToolbar: ToolbarContent {
                 .lineLimit(2)
                 .font(.headline)
         }
-        ToolbarItem(placement: .topBarTrailing) {
-            if starred {
-                Button(action: {
-                    starred = false
-                }) {
-                    Image(systemName: "star.fill")
-                }
-            } else {
-                Button(action: {
-                    starred = true
-                }, label: {
-                    Image(systemName: "star")
-                })
-            }
-        }
-        // TODO open and share link
+//        ToolbarItem(placement: .topBarTrailing) {
+//            if starred {
+//                Button(action: {
+//                    starred = false
+//                }) {
+//                    Image(systemName: "star.fill")
+//                }
+//            } else {
+//                Button(action: {
+//                    starred = true
+//                }, label: {
+//                    Image(systemName: "star")
+//                })
+//            }
+//        }
         ToolbarItemGroup(placement: .bottomBar) {
             if #available(iOS 16.0, *) {
                 Menu(content: {
                     Picker("TonalitySelect", selection: $tonality) {
-                        ForEach(getTonalityMenuList(), id: \.self) { tonality in
-                            Text(getTonalityMenuItem(tonality: tonality))
+                        ForEach(tonalityMenuList(), id: \.self) { tonality in
+                            Text(tonalityMenuItem(tonality: tonality))
                         }
                     }
                 }, label: {
-                    Label(getTonalityMenuText(), systemImage: "chevron.up.chevron.down").labelStyle(.titleAndIcon)
+                    Label(tonalityMenuText(), systemImage: "chevron.up.chevron.down").labelStyle(.titleAndIcon)
                 })
                 .menuStyle(.button)
                 .menuOrder(.fixed)
                 .buttonStyle(.bordered)
             } else {
-                Menu(getTonalityMenuText()) {
+                Menu(tonalityMenuText()) {
                     Picker("TonalitySelect", selection: $tonality) {
-                        ForEach(getTonalityMenuList(), id: \.self) { tonality in
-                            Text(getTonalityMenuItem(tonality: tonality))
+                        ForEach(tonalityMenuList().reversed(), id: \.self) { tonality in
+                            Text(tonalityMenuItem(tonality: tonality))
                         }
                     }
                 }
@@ -312,31 +311,15 @@ private struct SongToolbar: ToolbarContent {
             })
             .disabled(zoom >= pow(2.0, +2.0))
             if #available(iOS 16.0, *) {
-                Menu("SongOptions", systemImage: "ellipsis.circle") {
-                    OptionsMenuContent(
-                        song: song,
-                        defaultTonality: defaultTonality,
-                        tonality: $tonality,
-                        zoom: $zoom,
-                        infoVisible: $infoVisible
-                    )
-                }
-                .menuOrder(.fixed)
+                Menu("SongOptions", systemImage: "ellipsis.circle", content: optionsMenuContent)
+                    .menuOrder(.fixed)
             } else {
-                Menu("SongOptions", systemImage: "ellipsis.circle") {
-                    OptionsMenuContent(
-                        song: song,
-                        defaultTonality: defaultTonality,
-                        tonality: $tonality,
-                        zoom: $zoom,
-                        infoVisible: $infoVisible
-                    )
-                }
+                Menu("SongOptions", systemImage: "ellipsis.circle", content: optionsMenuContent)
             }
         }
     }
     
-    private func getTonalityMenuText() -> String {
+    private func tonalityMenuText() -> String {
         var text: String = String(localized: "TonalitySelect")
         if tonality != nil {
             text += ": " + tonality!.notation
@@ -344,7 +327,7 @@ private struct SongToolbar: ToolbarContent {
         return text
     }
     
-    private func getTonalityMenuList() -> Array<MusicNote?> {
+    private func tonalityMenuList() -> Array<MusicNote?> {
         var tonalities: Array<MusicNote?> = MusicNote.TONALITIES.filter { tonality in
             !hiddenTonalities.contains(tonality)
         }
@@ -352,7 +335,7 @@ private struct SongToolbar: ToolbarContent {
         return tonalities
     }
     
-    private func getTonalityMenuItem(tonality: MusicNote?) -> String {
+    private func tonalityMenuItem(tonality: MusicNote?) -> String {
         if tonality == nil {
             return String(localized: "TonalityNull")
         }
@@ -362,29 +345,29 @@ private struct SongToolbar: ToolbarContent {
         }
         return text
     }
-}
-
-
-private struct OptionsMenuContent: View {
-    let song: Song
-    let defaultTonality: MusicNote
-    @Binding var tonality: MusicNote?
-    @Binding var zoom: Double
-    @Binding var infoVisible: Bool
     
-    var body: some View {
-        Button("Information", action: {
+    @ViewBuilder
+    private func optionsMenuContent() -> some View {
+        Button("Information", systemImage: "info.circle", action: {
             infoVisible = true
         })
-        Button("TonalityHide", action: {
+        if let url = URL(string: song.permalink) {
+            Link(destination: url, label: {
+                Label("OpenInBrowser", systemImage: "link")
+            })
+            if #available(iOS 16.0, *) {
+                ShareLink("Share", item: url)
+            }
+        }
+        Button("TonalityHide", systemImage: "note.text", action: {
             tonality = nil
         })
         .disabled(tonality == nil)
-        Button("TonalityReset", action: {
+        Button("TonalityReset", systemImage: "music.note.list", action: {
             tonality = defaultTonality
         })
         .disabled(tonality == defaultTonality)
-        Button("FontSizeReset", action: {
+        Button("FontSizeReset", systemImage: "textformat.size", action: {
             zoom = pow(2.0, 0.0)
         })
         .disabled(zoom == pow(2.0, 0.0))
