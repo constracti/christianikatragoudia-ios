@@ -62,6 +62,22 @@
         }
       }
     },
+    "Destinations" : {
+      "localizations" : {
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Προορισμοί"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Destinations"
+          }
+        }
+      }
+    },
     "Details" : {
       "localizations" : {
         "el" : {
@@ -576,6 +592,22 @@
         }
       }
     },
+    "Recent" : {
+      "localizations" : {
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Πρόσφατα"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Recent"
+          }
+        }
+      }
+    },
     "Reset" : {
       "localizations" : {
         "el" : {
@@ -588,6 +620,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Reset"
+          }
+        }
+      }
+    },
+    "Results" : {
+      "localizations" : {
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Αποτελέσματα"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Results"
           }
         }
       }
@@ -652,6 +700,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Song options"
+          }
+        }
+      }
+    },
+    "Starred" : {
+      "localizations" : {
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Αγαπημένα"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Starred"
           }
         }
       }

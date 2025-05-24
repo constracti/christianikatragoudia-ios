@@ -268,12 +268,8 @@ private struct MainView: View {
                     }
                 }
             }
-            .listRowBackground(readyListItemBackground())
+            .listRowBackground(ListBackground())
         })
-    }
-    
-    private func readyListItemBackground() -> some View {
-        Color(UIColor.secondarySystemGroupedBackground).opacity(0.5)
     }
 }
 

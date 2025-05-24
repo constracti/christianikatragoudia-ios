@@ -77,10 +77,8 @@ class Config {
     }
 
     private static func decode<T: Decodable>(value: String?) -> T? {
-        if value == nil {
-            return nil
-        }
-        let data = Data(value!.utf8)
+        guard let value else { return nil }
+        let data = Data(value.utf8)
         return try? JSONDecoder().decode(T.self, from: data)
     }
     

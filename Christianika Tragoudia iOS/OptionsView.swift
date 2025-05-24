@@ -31,13 +31,13 @@ struct OptionsView: View {
                 TonalitiesView()
             }
         }
-        .listRowBackground(listItemBackground())
+        .listRowBackground(ListBackground())
         Section("Tools") {
             NavigationLink("Update") {
                 UpdateView()
             }
         }
-        .listRowBackground(listItemBackground())
+        .listRowBackground(ListBackground())
         Section("App") {
             NavigationLink("Information") {
                 InformationView()
@@ -58,12 +58,7 @@ struct OptionsView: View {
                 Text("1.0")
             }
         }
-        .listRowBackground(listItemBackground())
-    }
-    
-    private func listItemBackground() -> some View {
-        // TODO change color on tap
-        Color(UIColor.secondarySystemGroupedBackground).opacity(0.5)
+        .listRowBackground(ListBackground())
     }
 }
 

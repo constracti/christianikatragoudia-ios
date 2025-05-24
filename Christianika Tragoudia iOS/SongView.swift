@@ -27,15 +27,13 @@ struct SongView: View {
             .task {
                 let db = TheDatabase()
                 song = Song.getById(db: db, id: id)
-                if song == nil {
-                    return
-                }
-                songMeta = SongMeta.getById(db: db, id: song!.id)
+                guard let song else { return }
                 chord = Chord.getByParent(db: db, parent: id)
-                if chord == nil {
-                    return
-                }
-                chordMeta = ChordMeta.getById(db: db, id: chord!.id)
+                guard let chord else { return }
+                let visited = Date.now.formatted(.iso8601.dateTimeSeparator(.space)).replacingOccurrences(of: "Z", with: "")
+                songMeta = SongMeta.getById(db: db, id: song.id).copyWithVisited(visited: visited)
+                songMeta!.upsert(db: db)
+                chordMeta = ChordMeta.getById(db: db, id: chord.id)
                 hiddenTonalities = Config.getHiddenTonalities(db: db) ?? MusicNote.ENHARMONIC_TONALITIES
                 loading = false
             }
@@ -263,21 +261,21 @@ private struct SongToolbar: ToolbarContent {
                 .lineLimit(2)
                 .font(.headline)
         }
-//        ToolbarItem(placement: .topBarTrailing) {
-//            if starred {
-//                Button(action: {
-//                    starred = false
-//                }) {
-//                    Image(systemName: "star.fill")
-//                }
-//            } else {
-//                Button(action: {
-//                    starred = true
-//                }, label: {
-//                    Image(systemName: "star")
-//                })
-//            }
-//        }
+        ToolbarItem(placement: .topBarTrailing) {
+            if starred {
+                Button(action: {
+                    starred = false
+                }) {
+                    Image(systemName: "star.fill")
+                }
+            } else {
+                Button(action: {
+                    starred = true
+                }, label: {
+                    Image(systemName: "star")
+                })
+            }
+        }
         ToolbarItemGroup(placement: .bottomBar) {
             if #available(iOS 16.0, *) {
                 Menu(content: {
@@ -336,10 +334,8 @@ private struct SongToolbar: ToolbarContent {
     }
     
     private func tonalityMenuItem(tonality: MusicNote?) -> String {
-        if tonality == nil {
-            return String(localized: "TonalityNull")
-        }
-        var text: String = tonality!.notation
+        guard let tonality else { return String(localized: "TonalityNull") }
+        var text: String = tonality.notation
         if tonality == defaultTonality {
             text += " (" + String(localized: "TonalityDefault") + ")"
         }

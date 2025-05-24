@@ -65,4 +65,37 @@ class SongTitle: Identifiable, Comparable {
         }
         return list.sorted()
     }
+    
+    static func getStarred(db: TheDatabase) -> [SongTitle] {
+        let sql = """
+            SELECT `song`.`id`, `song`.`title`, `song`.`excerpt`
+            FROM `song`
+            JOIN `chord` ON `chord`.`parent` = `song`.`id`
+            JOIN `song_meta` ON `song_meta`.`id` = `song`.`id`
+            WHERE `song_meta`.`starred`
+            """
+        var list = [SongTitle]()
+        let stmt = Statement(db: db, sql: sql)
+        while stmt.step() == .ROW {
+            list.append(SongTitle(stmt: stmt))
+        }
+        return list.sorted()
+    }
+    
+    static func getRecent(db: TheDatabase) -> [SongTitle] {
+        let sql = """
+            SELECT `song`.`id`, `song`.`title`, `song`.`excerpt`
+            FROM `song`
+            JOIN `chord` ON `chord`.`parent` = `song`.`id`
+            JOIN `song_meta` ON `song_meta`.`id` = `song`.`id`
+            WHERE `song_meta`.`visited` IS NOT NULL
+            ORDER BY `song_meta`.`visited` DESC
+            """
+        var list = [SongTitle]()
+        let stmt = Statement(db: db, sql: sql)
+        while stmt.step() == .ROW {
+            list.append(SongTitle(stmt: stmt))
+        }
+        return list
+    }
 }

@@ -102,4 +102,13 @@ class SongMeta {
             visited: self.visited,
         )
     }
+    
+    func copyWithVisited(visited: String) -> SongMeta {
+        SongMeta(
+            id: self.id,
+            zoom: self.zoom,
+            starred: self.starred,
+            visited: visited,
+        )
+    }
 }
