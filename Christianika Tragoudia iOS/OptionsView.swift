@@ -51,12 +51,15 @@ struct OptionsView: View {
                         .font(.caption)
                 }
             })
-            // TODO version view
-            HStack {
-                Text("Version")
-                Spacer()
-                Text("1.0")
-            }
+            NavigationLink(destination: {
+                VersionView()
+            }, label: {
+                VStack(alignment: .leading) {
+                    Text("Version")
+                    Text(Version.CURRENT)
+                        .font(.caption)
+                }
+            })
         }
         .listRowBackground(ListBackground())
     }

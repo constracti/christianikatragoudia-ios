@@ -11,9 +11,6 @@
         }
       }
     },
-    "1.0" : {
-
-    },
     "App" : {
       "localizations" : {
         "el" : {
@@ -876,6 +873,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Version"
+          }
+        }
+      }
+    },
+    "Version_1" : {
+      "localizations" : {
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Λήψη τραγουδιών κατά την εκκίνηση της εφαρμογής\nΑναζήτηση τραγουδιών\nΤαξινόμηση αποτελεσμάτων αναζήτησης κατά συνάφεια\nΕπιλογή τονικότητας συγχορδιών ανά τραγούδι\nΟρισμός μεγέθους γραμματοσειράς στίχων και συγχορδιών\nΕμφάνιση συντελεστών τραγουδιού\nΣήμανση τραγουδιού ως αγαπημένου\nΕμφάνιση προσφάτως προβεβλημένων τραγουδιών\nΣυγχρονισμός με την ιστοσελίδα\nΠροβολή πληροφοριών, άδειας χρήσης και έκδοσης"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Download songs on app startup\nSearch songs\nSort search results by relevance\nSelect chord tonality per song\nSet lyrics and chords font size\nShow song creators\nMark songs as starred\nList recently viewed songs\nSync with website\nDisplay information, license and version"
           }
         }
       }
