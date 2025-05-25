@@ -78,6 +78,18 @@ class ChordMeta {
         return ChordMeta(stmt: stmt)
     }
     
+    static func resetTonality(db: TheDatabase) -> Void {
+        let sql = "UPDATE `chord_meta` SET `tonality` = NULL"
+        let stmt = Statement(db: db, sql: sql)
+        stmt.stepDone()
+    }
+    
+    static func resetZoom(db: TheDatabase) -> Void {
+        let sql = "UPDATE `chord_meta` SET `zoom` = 1"
+        let stmt = Statement(db: db, sql: sql)
+        stmt.stepDone()
+    }
+    
     func copyWithTonality(tonality: MusicNote?) -> ChordMeta {
         ChordMeta(
             id: self.id,

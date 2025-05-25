@@ -1,16 +1,6 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
-    "%@ (%lld)" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "%1$@ (%2$lld)"
-          }
-        }
-      }
-    },
     "App" : {
       "localizations" : {
         "el" : {
@@ -43,6 +33,22 @@
         }
       }
     },
+    "Cancel" : {
+      "localizations" : {
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Άκυρο"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cancel"
+          }
+        }
+      }
+    },
     "Check" : {
       "localizations" : {
         "el" : {
@@ -55,6 +61,54 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Check"
+          }
+        }
+      }
+    },
+    "Clear" : {
+      "localizations" : {
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Εκκαθάριση"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Clear"
+          }
+        }
+      }
+    },
+    "ClearRecent" : {
+      "localizations" : {
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Εκκαθάριση πρόσφατων τραγουδιών"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Clear recent songs"
+          }
+        }
+      }
+    },
+    "ClearRecentMessage" : {
+      "localizations" : {
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Εκκαθάριση λίστας προσφάτως προβεβλημένων τραγουδιών. "
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Clear recently viewed songs list."
           }
         }
       }
@@ -621,6 +675,70 @@
         }
       }
     },
+    "ResetTonality" : {
+      "localizations" : {
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Επαναφορά επιλεγμένης τονικότητας συγχορδιών"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reset selected chord tonalities"
+          }
+        }
+      }
+    },
+    "ResetTonalityMessage" : {
+      "localizations" : {
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Εμφάνιση στίχων και απόκρυψη συγχορδιών σε όλα τα τραγούδια."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Show lyrics and hide chords in all songs."
+          }
+        }
+      }
+    },
+    "ResetZoom" : {
+      "localizations" : {
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Επαναφορά μεγέθους γραμματοσειράς"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reset font size"
+          }
+        }
+      }
+    },
+    "ResetZoomMessage" : {
+      "localizations" : {
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Επαναφορά μεγέθους γραμματοσειράς στίχων και συγχορδιών σε όλα τα τραγούδια."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reset lyrics and chords font size in all songs."
+          }
+        }
+      }
+    },
     "Results" : {
       "localizations" : {
         "el" : {
@@ -861,6 +979,22 @@
         }
       }
     },
+    "UpdateDescription" : {
+      "localizations" : {
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Λήψη νέων τραγουδιών από την ιστοσελίδα"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Download new songs from the website"
+          }
+        }
+      }
+    },
     "Version" : {
       "localizations" : {
         "el" : {
@@ -882,13 +1016,13 @@
         "el" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Λήψη τραγουδιών κατά την εκκίνηση της εφαρμογής\nΑναζήτηση τραγουδιών\nΤαξινόμηση αποτελεσμάτων αναζήτησης κατά συνάφεια\nΕπιλογή τονικότητας συγχορδιών ανά τραγούδι\nΟρισμός μεγέθους γραμματοσειράς στίχων και συγχορδιών\nΕμφάνιση συντελεστών τραγουδιού\nΣήμανση τραγουδιού ως αγαπημένου\nΕμφάνιση προσφάτως προβεβλημένων τραγουδιών\nΣυγχρονισμός με την ιστοσελίδα\nΠροβολή πληροφοριών, άδειας χρήσης και έκδοσης"
+            "value" : "Λήψη τραγουδιών κατά την εκκίνηση της εφαρμογής\nΑναζήτηση τραγουδιών\nΤαξινόμηση αποτελεσμάτων αναζήτησης κατά συνάφεια\nΕπιλογή τονικότητας συγχορδιών ανά τραγούδι\nΟρισμός μεγέθους γραμματοσειράς στίχων και συγχορδιών\nΕμφάνιση συντελεστών τραγουδιού\nΣήμανση τραγουδιού ως αγαπημένου\nΕμφάνιση προσφάτως προβεβλημένων τραγουδιών\nΣυγχρονισμός με την ιστοσελίδα\nΕπαναφορά επιλογών χρήστη\nΠροβολή πληροφοριών, άδειας χρήσης και έκδοσης"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Download songs on app startup\nSearch songs\nSort search results by relevance\nSelect chord tonality per song\nSet lyrics and chords font size\nShow song creators\nMark songs as starred\nList recently viewed songs\nSync with website\nDisplay information, license and version"
+            "value" : "Download songs on app startup\nSearch songs\nSort search results by relevance\nSelect chord tonality per song\nSet lyrics and chords font size\nShow song creators\nMark songs as starred\nList recently viewed songs\nSync with website\nReset user options\nDisplay information, license and version"
           }
         }
       }

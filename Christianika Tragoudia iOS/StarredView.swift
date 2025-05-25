@@ -38,7 +38,7 @@ struct StarredView: View {
         }
         .onAppear {
             guard !isPreview else {
-                resultList = demoResultList
+                resultList = Demo.resultList
                 return
             }
             Task {

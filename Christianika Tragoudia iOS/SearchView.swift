@@ -24,9 +24,6 @@ struct SearchView: View {
 }
 
 
-// TODO scroll to top
-
-
 private struct MainView: View {
     let isPreview: Bool
     
@@ -59,7 +56,7 @@ private struct MainView: View {
         }
         .onAppear {
             guard !isPreview else {
-                state = state.copyWithResultList(resultList: demoResultList)
+                state = state.copyWithResultList(resultList: Demo.resultList)
                 return
             }
             Task {

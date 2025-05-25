@@ -372,102 +372,23 @@ private struct SongToolbar: ToolbarContent {
 
 
 #Preview {
-    let song = Song(
-        id: 1,
-        date: "2022",
-        content: """
-            Θ' ανεβούμε μαζί στο βουνό,
-            στο βουνό το ψηλό, το μεγάλο.
-            Μπρος εσύ, πίσω εγώ κι αρχινώ
-            της αυγής το τραγούδι να ψάλλω.
-            
-            <i>Μπρος εσύ, πίσω εγώ και γοργοί
-            στου Θαβώρ τις κορφές θ' ανεβούμε
-            και μακριά απ' την πολύβουη γη
-            άλλων κόσμων το φως θα χαρούμε.</i>
-            
-            Πόσο λάμπει η θεϊκιά σου μορφή,
-            πώς αστράφτει ο λευκός σου χιτώνας.
-            Τρεις σκηνές να στηθούν στην κορφή
-            κι ας τη δέρνει ο βοριάς κι ο χειμώνας.
-
-            <i>Μπρος εσύ, πίσω εγώ και γοργοί…</i>
-            """,
-        title: "Θαβώρ",
-        excerpt: """
-            Θ' ανεβούμε μαζί στο βουνό
-
-            στίχοι: Γ. Βερίτης
-            μουσική: Α. Χατζηαποστόλου
-            """,
-        modified: "2022",
-        permalink: "https://christianikatragoudia.gr/songs/thavor-tha-anevoume-mazi/",
-    )
-    let songMeta = SongMeta(id: 1)
-    let chord = Chord(
-        id: 7566,
-        date: "2022",
-        modified: "2022",
-        parent: 1,
-        content: """
-            Gm    EbΔ7  Gm    EbΔ7  
-
-                  Gm                Dm
-            Θ' ανεβούμε μαζί στο βουνό,
-                   Eb               Bb
-            στο βουνό το ψηλό, το μεγάλο.
-                   Gm                  Cm
-            Μπρος εσύ, πίσω εγώ κι αρχινώ
-                            Gm       D Gm
-            της αυγής το τραγούδι να ψάλλω.
-
-            G  D  
-
-                   G                  Bm
-            Μπρος εσύ, πίσω εγώ και γοργοί
-                   C                    G
-            στου Θαβώρ τις κορφές θ' ανεβούμε
-                  C              D      G
-            και μακριά απ' την πολύβουη γη
-                  Em        C        D  G   D
-            άλλων κόσμων το φως θα χαρούμε.
-
-            Gm    EbΔ7  Gm    EbΔ7  
-
-                 Gm                    Dm
-            Πόσο λάμπει η θεϊκιά σου μορφή,
-                 Eb                      Bb
-            πώς αστράφτει ο λευκός σου χιτώνας.
-                     Gm                    Cm
-            Τρεις σκηνές να στηθούν στην κορφή
-                                Gm           D Gm
-            κι ας τη δέρνει ο βοριάς κι ο χειμώνας.
-
-            G  D  
-
-
-            Μπρος εσύ, πίσω εγώ και γοργοί…
-            """,
-        tonality: MusicNote(notation: "G")!,
-    )
-    let chordMeta = ChordMeta(id: 7566)
     if #available(iOS 16.0, *) {
         NavigationStack {
             SongMain(
-                song: song,
-                songMeta: .constant(songMeta),
-                chord: chord,
-                chordMeta: .constant(chordMeta),
+                song: Demo.song,
+                songMeta: .constant(Demo.songMeta),
+                chord: Demo.chord,
+                chordMeta: .constant(Demo.chordMeta),
                 hiddenTonalities: MusicNote.ENHARMONIC_TONALITIES,
             )
         }
     } else {
         NavigationView {
             SongMain(
-                song: song,
-                songMeta: .constant(songMeta),
-                chord: chord,
-                chordMeta: .constant(chordMeta),
+                song: Demo.song,
+                songMeta: .constant(Demo.songMeta),
+                chord: Demo.chord,
+                chordMeta: .constant(Demo.chordMeta),
                 hiddenTonalities: MusicNote.ENHARMONIC_TONALITIES,
             )
         }

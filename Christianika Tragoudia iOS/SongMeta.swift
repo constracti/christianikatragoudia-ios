@@ -85,6 +85,18 @@ class SongMeta {
         return SongMeta(stmt: stmt)
     }
     
+    static func resetZoom(db: TheDatabase) -> Void {
+        let sql = "UPDATE `song_meta` SET `zoom` = 1"
+        let stmt = Statement(db: db, sql: sql)
+        stmt.stepDone()
+    }
+    
+    static func clearVisited(db: TheDatabase) -> Void {
+        let sql = "UPDATE `song_meta` SET `visited` = NULL"
+        let stmt = Statement(db: db, sql: sql)
+        stmt.stepDone()
+    }
+    
     func copyWithZoom(zoom: Double) -> SongMeta {
         SongMeta(
             id: self.id,
