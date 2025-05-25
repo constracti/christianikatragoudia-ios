@@ -57,26 +57,26 @@ class Demo {
     
     static let resultList: [SongTitle] = [
         SongTitle(id: 1, title: "Θαβώρ", excerpt: "Θ' ανεβούμε μαζί στο βουνό"),
-        SongTitle(id: 2, title: "Ευωδία Χριστού", excerpt: "Στης αγάπης τον ήλιο"),
-        SongTitle(id: 3, title: "Ριζοτόμοι", excerpt: "Παντού γύρω φυτρωμένα"),
-        SongTitle(id: 4, title: "Στου Παρνασσού μας", excerpt: "Στου Παρνασσού μας"),
-        SongTitle(id: 5, title: "Πολιτεία αγάπης", excerpt: "Υψώστε λάβαρο σταυρού στον Παρνασσό"),
-        SongTitle(id: 6, title: "Χαρωπές φωνές", excerpt: "Όμορφη η ζωή μας, δίχως φόβο"),
-        SongTitle(id: 7, title: "Μη δειλιάζεις", excerpt: "Κίνησε τώρα μαχητή"),
-        SongTitle(id: 8, title: "Στου Χριστού μας το λιμάνι", excerpt: "Στου Χριστού μας το λιμάνι"),
-        SongTitle(id: 9, title: "Γη της επαγγελίας", excerpt: "Βγήκαν απ' τη χώρα της δουλείας"),
-        SongTitle(id: 10, title: "Ισχυροί", excerpt: "Ισχυροί στρατιώτες"),
-        SongTitle(id: 11, title: "Σύναιμοι", excerpt: "Νιώθω μονάχος σαν πέφτει ο ήλιος"),
-        SongTitle(id: 12, title: "Πολύκαρποι", excerpt: "Άγονη γη διψά πολύ"),
-        SongTitle(id: 13, title: "Μαζί με το Χριστό μου", excerpt: "Μαζί με το Χριστό μου"),
-        SongTitle(id: 14, title: "Γρηγορείτε", excerpt: "Όταν την ψυχή ταλαιπωρεί"),
-        SongTitle(id: 15, title: "Είν' ο δρόμος ανοιχτός", excerpt: "Είν' ο δρόμος ανοιχτός"),
-        SongTitle(id: 16, title: "Σκυταλοδρόμοι", excerpt: "Σε πίκραναν πολλοί"),
+        SongTitle(id: 14, title: "Ευωδία Χριστού", excerpt: "Στης αγάπης τον ήλιο"),
+        SongTitle(id: 16, title: "Ριζοτόμοι", excerpt: "Παντού γύρω φυτρωμένα"),
+        SongTitle(id: 18, title: "Στου Παρνασσού μας", excerpt: "Στου Παρνασσού μας"),
+        SongTitle(id: 20, title: "Πολιτεία αγάπης", excerpt: "Υψώστε λάβαρο σταυρού στον Παρνασσό"),
+        SongTitle(id: 22, title: "Χαρωπές φωνές", excerpt: "Όμορφη η ζωή μας, δίχως φόβο"),
+        SongTitle(id: 24, title: "Μη δειλιάζεις", excerpt: "Κίνησε τώρα μαχητή"),
+        SongTitle(id: 27, title: "Στου Χριστού μας το λιμάνι", excerpt: "Στου Χριστού μας το λιμάνι"),
+        SongTitle(id: 29, title: "Γη της επαγγελίας", excerpt: "Βγήκαν απ' τη χώρα της δουλείας"),
+        SongTitle(id: 31, title: "Ισχυροί", excerpt: "Ισχυροί στρατιώτες"),
+        SongTitle(id: 33, title: "Σύναιμοι", excerpt: "Νιώθω μονάχος σαν πέφτει ο ήλιος"),
+        SongTitle(id: 35, title: "Πολύκαρποι", excerpt: "Άγονη γη διψά πολύ"),
+        SongTitle(id: 37, title: "Μαζί με το Χριστό μου", excerpt: "Μαζί με το Χριστό μου"),
+        SongTitle(id: 39, title: "Γρηγορείτε", excerpt: "Όταν την ψυχή ταλαιπωρεί"),
+        SongTitle(id: 41, title: "Είν' ο δρόμος ανοιχτός", excerpt: "Είν' ο δρόμος ανοιχτός"),
+        SongTitle(id: 43, title: "Σκυταλοδρόμοι", excerpt: "Σε πίκραναν πολλοί"),
     ]
     
     static let song: Song = Song(
         id: 1,
-        date: "2022",
+        date: "2022-01-10",
         content: """
             Θ' ανεβούμε μαζί στο βουνό,
             στο βουνό το ψηλό, το μεγάλο.
@@ -102,7 +102,7 @@ class Demo {
             στίχοι: Γ. Βερίτης
             μουσική: Α. Χατζηαποστόλου
             """,
-        modified: "2022",
+        modified: "2022-01-10",
         permalink: "https://christianikatragoudia.gr/songs/thavor-tha-anevoume-mazi/",
     )
     
@@ -110,8 +110,8 @@ class Demo {
     
     static let chord = Chord(
         id: 7566,
-        date: "2022",
-        modified: "2022",
+        date: "2024-03-11",
+        modified: "2024-03-11",
         parent: 1,
         content: """
             Gm    EbΔ7  Gm    EbΔ7  
@@ -156,4 +156,9 @@ class Demo {
     )
     
     static let chordMeta = ChordMeta(id: 7566)
+    
+    static let actionMap: [UpdateAction: [SongTitle]] = [
+        .ADD: Array(Demo.resultList[0..<2]),
+        .EDIT: Array(Demo.resultList[2..<4]),
+    ]
 }

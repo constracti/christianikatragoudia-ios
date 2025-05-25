@@ -11,7 +11,7 @@ import SwiftUI
 private enum ViewState {
     case CHECK
     case APPLY
-    case READY([Action: [SongTitle]])
+    case READY([UpdateAction: [SongTitle]])
     case ERROR
     
     var canCheck: Bool {
@@ -42,7 +42,7 @@ private enum ViewState {
 }
 
 
-private enum Action: Int {
+enum UpdateAction: Int {
     case ADD
     case EDIT
     
@@ -161,9 +161,9 @@ private struct MainView: View {
                 }
             })
             // run
-            let actionMap = newPairMap.values.reduce(into: [Action: [SongTitle]](), { acc, newPair in
+            let actionMap = newPairMap.values.reduce(into: [UpdateAction: [SongTitle]](), { acc, newPair in
                 let oldPair = oldPairMap[newPair.0.id]
-                let action: Action?
+                let action: UpdateAction?
                 if oldPair == nil {
                     action = .ADD
                 } else if oldPair!.0.modified != newPair.0.modified || oldPair!.1.modified != newPair.1.modified {
@@ -236,7 +236,7 @@ private struct MainView: View {
     }
     
     @ViewBuilder
-    private func readyView(actionMap: [Action: [SongTitle]]) -> some View {
+    private func readyView(actionMap: [UpdateAction: [SongTitle]]) -> some View {
         if #available(iOS 16.0, *) {
             List {
                 readyListContent(actionMap: actionMap)
@@ -250,7 +250,7 @@ private struct MainView: View {
         }
     }
     
-    private func readyListContent(actionMap: [Action: [SongTitle]]) -> some View {
+    private func readyListContent(actionMap: [UpdateAction: [SongTitle]]) -> some View {
         ForEach(actionMap.sorted(by: { lhs, rhs in
             lhs.key.rawValue < rhs.key.rawValue
         }).map({ action, resultList in
@@ -276,23 +276,13 @@ private struct MainView: View {
 
 
 #Preview("Ready") {
-    let actionMap: [Action: [SongTitle]] = [
-        .ADD: [
-            SongTitle(id: 1, title: "Θαβώρ", excerpt: "Θ' ανεβούμε μαζί στο βουνό"),
-            SongTitle(id: 2, title: "Ευωδία Χριστού", excerpt: "Στης αγάπης τον ήλιο"),
-        ],
-        .EDIT: [
-            SongTitle(id: 3, title: "Ριζοτόμοι", excerpt: "Παντού γύρω φυτρωμένα"),
-            SongTitle(id: 4, title: "Στου Παρνασσού μας", excerpt: "Στου Παρνασσού μας"),
-        ],
-    ]
     if #available(iOS 16.0, *) {
         NavigationStack {
-            MainView(state: .constant(.READY(actionMap)))
+            MainView(state: .constant(.READY(Demo.actionMap)))
         }
     } else {
         NavigationView {
-            MainView(state: .constant(.READY(actionMap)))
+            MainView(state: .constant(.READY(Demo.actionMap)))
         }
     }
 }
