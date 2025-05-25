@@ -20,12 +20,12 @@ struct InformationView: View {
                     String(localized: "InformationFeatures"),
                     "",
                     String(localized: "InformationExtras"),
-                    "*[\(Patch.domain)](\(Patch.home))*",
+                    "*[\(WebApp.homeHost)](\(WebApp.homeString))*",
                     "",
                     String(localized: "InformationContribution"),
                     "",
                     String(localized: "InformationDeveloper"),
-                    "*\(Patch.email)*",
+                    "*\(WebApp.mailString)*",
                 ].joined(separator: "\n")
                 if let rich = try? AttributedString(
                     markdown: markdown,
@@ -44,8 +44,8 @@ struct InformationView: View {
         .navigationTitle("Information")
         .toolbar {
             ToolbarItemGroup(placement: .bottomBar) {
-                Link("InformationOpenSite", destination: URL(string: Patch.home)!)
-                Link("InformationSendMail", destination: URL(string: "mailto:" + Patch.email)!)
+                Link("InformationOpenSite", destination: WebApp.homeUrl)
+                Link("InformationSendMail", destination: WebApp.mailUrl)
             }
         }
     }

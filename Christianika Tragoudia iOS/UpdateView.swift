@@ -178,6 +178,9 @@ private struct MainView: View {
                     acc[action!]!.append(SongTitle(song: newPair.0))
                 }
             })
+            if actionMap.isEmpty {
+                Config.setUpdateCheck(db: db, value: false)
+            }
             state = .READY(actionMap)
         } else {
             state = .ERROR
@@ -229,6 +232,7 @@ private struct MainView: View {
             Chord.update(db: db, chordList: updChordList)
             Chord.delete(db: db, chordList: delChordList)
             Config.setUpdateTimestamp(db: db, value: patch.timestamp)
+            Config.setUpdateCheck(db: db, value: false)
             state = .READY([:])
         } else {
             state = .ERROR

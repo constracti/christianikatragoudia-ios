@@ -95,6 +95,7 @@ private struct MainView: View {
             SongFts.optimize(db: db)
             Chord.insert(db: db, chordList: patch.chordList)
             Config.setUpdateTimestamp(db: db, value: patch.timestamp)
+            Config.setUpdateCheck(db: db, value: false)
             passed = Song.count(db: db) > 0
         } else {
             errorVisible = true

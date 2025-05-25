@@ -73,6 +73,7 @@ class Config {
     private enum KEY: String {
         case VERSION = "version"
         case UPDATE_TIMESTAMP = "update_timestamp"
+        case UPDATE_CHECK = "update_check"
         case HIDDEN_TONALITIES = "hidden_tonalities"
     }
 
@@ -98,7 +99,7 @@ class Config {
     }
     
     static func getVersion(db: TheDatabase) -> Int? {
-        return get(db: db, key: .VERSION)
+        get(db: db, key: .VERSION)
     }
     
     static func setVersion(db: TheDatabase, value: Int?) {
@@ -106,11 +107,19 @@ class Config {
     }
     
     static func getUpdateTimestamp(db: TheDatabase) -> Int? {
-        return get(db: db, key: .UPDATE_TIMESTAMP)
+        get(db: db, key: .UPDATE_TIMESTAMP)
     }
     
     static func setUpdateTimestamp(db: TheDatabase, value: Int?) {
         set(db: db, key: .UPDATE_TIMESTAMP, value: value)
+    }
+    
+    static func getUpdateCheck(db: TheDatabase) -> Bool? {
+        get(db: db, key: .UPDATE_CHECK)
+    }
+    
+    static func setUpdateCheck(db: TheDatabase, value: Bool?) {
+        set(db: db, key: .UPDATE_CHECK, value: value)
     }
     
     static func getHiddenTonalities(db: TheDatabase) -> Set<MusicNote>? {

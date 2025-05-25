@@ -15,10 +15,6 @@ class Patch: Decodable {
     let songList: [Song]
     let chordList: [Chord]
     
-    static let domain: String = "christianikatragoudia.gr"
-    static let email: String = "info@christianikatragoudia.gr"
-    static let home: String = "https://christianikatragoudia.gr/"
-    
     init(timestamp: Int, songIdSet: Set<Int>, chordIdSet: Set<Int>, songList: [Song], chordList: [Chord]) {
         self.timestamp = timestamp
         self.songIdSet = songIdSet
@@ -44,27 +40,21 @@ class Patch: Decodable {
         ]
         let url: URL
         if #available(iOS 16.0, *) {
-            url = URL(string: "https://christianikatragoudia.gr/wp-admin/admin-ajax.php")!
-                .appending(queryItems: queryItems)
+            url = WebApp.ajaxUrl.appending(queryItems: queryItems)
         } else {
-            var urlComp = URLComponents(string: "https://christianikatragoudia.gr/wp-admin/admin-ajax.php")!
+            var urlComp = URLComponents(string: WebApp.ajaxUrl.absoluteString)!
             urlComp.queryItems = queryItems
             url = urlComp.url!
         }
         do {
-            let tuple = try! await URLSession.shared.data(from: url)
+            let tuple = try await URLSession.shared.data(from: url)
             let (data, response) = (tuple.0, tuple.1 as! HTTPURLResponse)
             if response.statusCode != 200 {
-                throw PatchError.status(statusCode: response.statusCode)
+                throw WebAppError.status(statusCode: response.statusCode)
             }
             return try JSONDecoder().decode(Patch.self, from: data)
         } catch {
             return nil
         }
     }
-}
-
-
-private enum PatchError: Error {
-    case status(statusCode: Int)
 }

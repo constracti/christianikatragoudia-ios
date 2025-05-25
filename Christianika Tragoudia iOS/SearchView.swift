@@ -29,6 +29,8 @@ private struct MainView: View {
     
     @State private var state: SearchState = SearchState()
     
+    private let timer = Timer.publish(every: 3600, on: .main, in: .common).autoconnect()
+    
     var body: some View {
         ZStack {
             BackgroundView()
@@ -37,13 +39,13 @@ private struct MainView: View {
             } else {
                 if #available(iOS 16.0, *) {
                     List {
-                        MainView.listContent(query: state.query, resultList: state.resultList!)
+                        MainView.listContent(query: state.query, resultList: state.resultList!, updateCheck: state.updateCheck ?? false)
                     }
                     .scrollContentBackground(.hidden)
                     .searchable(text: $state.bindQuery(), prompt: "Search")
                 } else {
                     List {
-                        MainView.listContent(query: state.query, resultList: state.resultList!)
+                        MainView.listContent(query: state.query, resultList: state.resultList!, updateCheck: state.updateCheck ?? false)
                     }
                     .listStyle(.plain)
                     .searchable(text: $state.bindQuery(), prompt: "Search")
@@ -54,19 +56,34 @@ private struct MainView: View {
         .toolbar {
             HomeToolbarContent()
         }
+        .onReceive(timer) { _ in
+            Task {
+                let db = TheDatabase()
+                if state.updateCheck ?? SearchState.cachedUpdateCheck(db: db) {
+                    return
+                }
+                if await SearchState.serverUpdateCheck(db: db) {
+                    Config.setUpdateCheck(db: db, value: true)
+                    state = state.copyWithUpdateCheck(updateCheck: true)
+                }
+            }
+        }
         .onAppear {
             guard !isPreview else {
-                state = state.copyWithResultList(resultList: Demo.resultList)
+                state = state.copyWithResultList(resultList: Demo.resultList).copyWithUpdateCheck(updateCheck: true)
                 return
             }
             Task {
-                state = await state.copyWithResultList(resultList: state.search())
+                let db = TheDatabase()
+                state = await state
+                    .copyWithResultList(resultList: SearchState.getResultList(db: db, query: state.query))
+                    .copyWithUpdateCheck(updateCheck: SearchState.cachedUpdateCheck(db: db))
             }
         }
     }
 
     @ViewBuilder
-    private static func listContent(query: String, resultList: [SongTitle]) -> some View {
+    private static func listContent(query: String, resultList: [SongTitle], updateCheck: Bool) -> some View {
         if query.isEmpty {
             Section("Destinations") {
                 NavigationLink(destination: {
@@ -79,6 +96,18 @@ private struct MainView: View {
                 }, label: {
                     Label("Recent", systemImage: "clock.arrow.trianglehead.counterclockwise.rotate.90")
                 })
+                if updateCheck {
+                    NavigationLink(destination: {
+                        UpdateView()
+                    }, label: {
+                        HStack {
+                            Label("Update", systemImage: "arrow.trianglehead.2.clockwise.rotate.90")
+                            Spacer()
+                            Image(systemName: "smallcircle.filled.circle.fill")
+                                .foregroundStyle(.badge)
+                        }
+                    })
+                }
             }
             .labelStyle(.titleAndIcon)
             .listRowBackground(ListBackground())
