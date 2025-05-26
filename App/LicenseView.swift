@@ -50,6 +50,7 @@ struct LicenseView: View {
                 Link("Details", destination: URL(string: String(localized: "LicenseUrl"))!)
             }
         }
+        .analyticsScreen(name: String(localized: "License"), class: "/license/")
     }
 }
 

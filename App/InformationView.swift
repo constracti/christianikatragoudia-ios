@@ -48,6 +48,7 @@ struct InformationView: View {
                 Link("InformationSendMail", destination: WebApp.mailUrl)
             }
         }
+        .analyticsScreen(name: String(localized: "Information"), class: "/info/")
     }
 }
 

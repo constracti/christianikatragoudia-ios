@@ -72,6 +72,7 @@ struct TonalitiesView: View {
                 }
             }
         }
+        .analyticsScreen(name: String(localized: "Tonalities"), class: "/options/tonalities/")
     }
 }
 

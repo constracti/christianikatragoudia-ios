@@ -80,6 +80,7 @@ private struct MainView: View {
                     .copyWithUpdateCheck(updateCheck: SearchState.cachedUpdateCheck(db: db))
             }
         }
+        .analyticsScreen(name: String(localized: "Search"), class: "/search/")
     }
 
     @ViewBuilder

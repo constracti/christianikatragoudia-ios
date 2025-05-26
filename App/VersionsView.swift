@@ -8,7 +8,7 @@
 import SwiftUI
 
 
-struct VersionView: View {
+struct VersionsView: View {
     
     var body: some View {
         ZStack {
@@ -36,7 +36,8 @@ struct VersionView: View {
             }
             .padding()
         }
-        .navigationTitle("Version")
+        .navigationTitle("VersionHistory")
+        .analyticsScreen(name: String(localized: "VersionHistory"), class: "/versions/")
     }
 }
 
@@ -44,11 +45,11 @@ struct VersionView: View {
 #Preview {
     if #available(iOS 16.0, *) {
         NavigationStack {
-            VersionView()
+            VersionsView()
         }
     } else {
         NavigationView {
-            VersionView()
+            VersionsView()
         }
     }
 }

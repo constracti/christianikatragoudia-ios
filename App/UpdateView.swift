@@ -104,6 +104,7 @@ private struct MainView: View {
         }
         .navigationTitle("Update")
         .toolbar(content: toolbarContent)
+        .analyticsScreen(name: String(localized: "Update"), class: "/options/update/")
     }
     
     private func toolbarContent() -> some ToolbarContent {

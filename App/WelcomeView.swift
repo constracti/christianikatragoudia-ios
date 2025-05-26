@@ -62,6 +62,7 @@ private struct MainView: View {
                     .buttonStyle(.borderedProminent)
                     .padding()
                 }
+                .analyticsScreen(name: String(localized: "Welcome"), class: "/welcome/")
             case .DOWNLOAD:
                 ProgressView()
                     .task(downloadTask)

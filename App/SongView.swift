@@ -140,6 +140,10 @@ private struct SongMain: View {
         }, message: { song in
             Text(song.excerpt)
         })
+        .analyticsScreen(
+            name: song.title,
+            class: song.permalink.replacingOccurrences(of: WebApp.homeString, with: "/"),
+        )
     }
 }
 

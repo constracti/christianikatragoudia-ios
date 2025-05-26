@@ -55,6 +55,7 @@ struct OptionsView: View {
         }, message: {
             Text("ResetZoomMessage")
         })
+        .analyticsScreen(name: String(localized: "Options"), class: "/options/")
     }
     
     @ViewBuilder
@@ -107,7 +108,7 @@ struct OptionsView: View {
                 }
             })
             NavigationLink(destination: {
-                VersionView()
+                VersionsView()
             }, label: {
                 VStack(alignment: .leading) {
                     Text("Version")

@@ -8,8 +8,13 @@
 import SwiftUI
 
 
+// TODO log analytics custom events
+
+
 @main
 struct TheApp: App {
+    
+    @UIApplicationDelegateAdaptor private var delegate: TheAppDelegate
     
     @State private var passed = false
     

@@ -45,6 +45,7 @@ struct StarredView: View {
                 resultList = SongTitle.getStarred(db: TheDatabase())
             }
         }
+        .analyticsScreen(name: String(localized: "Starred"), class: "/starred/")
     }
 }
 

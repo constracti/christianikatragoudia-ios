@@ -45,6 +45,7 @@ struct RecentView: View {
                 resultList = SongTitle.getRecent(db: TheDatabase())
             }
         }
+        .analyticsScreen(name: String(localized: "Recent"), class: "/recent/")
     }
 }
 
