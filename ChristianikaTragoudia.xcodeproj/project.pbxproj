@@ -7,13 +7,13 @@
 	objects = {
 
 /* Begin PBXFileReference section */
-		EF8C86822DB80FCD007A1274 /* Christianika Tragoudia iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Christianika Tragoudia iOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		EF8C86822DB80FCD007A1274 /* App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = App.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		EF8C86842DB80FCD007A1274 /* Christianika Tragoudia iOS */ = {
+		EF8C86842DB80FCD007A1274 /* App */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = "Christianika Tragoudia iOS";
+			path = App;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -32,7 +32,7 @@
 		EF8C86792DB80FCD007A1274 = {
 			isa = PBXGroup;
 			children = (
-				EF8C86842DB80FCD007A1274 /* Christianika Tragoudia iOS */,
+				EF8C86842DB80FCD007A1274 /* App */,
 				EF8C86832DB80FCD007A1274 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -40,7 +40,7 @@
 		EF8C86832DB80FCD007A1274 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				EF8C86822DB80FCD007A1274 /* Christianika Tragoudia iOS.app */,
+				EF8C86822DB80FCD007A1274 /* App.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -48,9 +48,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		EF8C86812DB80FCD007A1274 /* Christianika Tragoudia iOS */ = {
+		EF8C86812DB80FCD007A1274 /* App */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = EF8C868D2DB80FCE007A1274 /* Build configuration list for PBXNativeTarget "Christianika Tragoudia iOS" */;
+			buildConfigurationList = EF8C868D2DB80FCE007A1274 /* Build configuration list for PBXNativeTarget "App" */;
 			buildPhases = (
 				EF8C867E2DB80FCD007A1274 /* Sources */,
 				EF8C867F2DB80FCD007A1274 /* Frameworks */,
@@ -61,13 +61,13 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				EF8C86842DB80FCD007A1274 /* Christianika Tragoudia iOS */,
+				EF8C86842DB80FCD007A1274 /* App */,
 			);
-			name = "Christianika Tragoudia iOS";
+			name = App;
 			packageProductDependencies = (
 			);
 			productName = "Christianika Tragoudia iOS";
-			productReference = EF8C86822DB80FCD007A1274 /* Christianika Tragoudia iOS.app */;
+			productReference = EF8C86822DB80FCD007A1274 /* App.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -85,7 +85,7 @@
 					};
 				};
 			};
-			buildConfigurationList = EF8C867D2DB80FCD007A1274 /* Build configuration list for PBXProject "Christianika Tragoudia iOS" */;
+			buildConfigurationList = EF8C867D2DB80FCD007A1274 /* Build configuration list for PBXProject "ChristianikaTragoudia" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -100,7 +100,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				EF8C86812DB80FCD007A1274 /* Christianika Tragoudia iOS */,
+				EF8C86812DB80FCD007A1274 /* App */,
 			);
 		};
 /* End PBXProject section */
@@ -314,7 +314,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		EF8C867D2DB80FCD007A1274 /* Build configuration list for PBXProject "Christianika Tragoudia iOS" */ = {
+		EF8C867D2DB80FCD007A1274 /* Build configuration list for PBXProject "ChristianikaTragoudia" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				EF8C868B2DB80FCE007A1274 /* Debug */,
@@ -323,7 +323,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		EF8C868D2DB80FCE007A1274 /* Build configuration list for PBXNativeTarget "Christianika Tragoudia iOS" */ = {
+		EF8C868D2DB80FCE007A1274 /* Build configuration list for PBXNativeTarget "App" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				EF8C868E2DB80FCE007A1274 /* Debug */,
