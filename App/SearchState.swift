@@ -24,6 +24,7 @@ class SearchState {
         guard !query.isEmpty else {
             return SongTitle.getAll(db: db)
         }
+        TheAnalytics.logShare(query: query)
         let fullTextQuery = SongFts
             .tokenize(inString: query)
             .components(separatedBy: " ")

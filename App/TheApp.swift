@@ -8,9 +8,6 @@
 import SwiftUI
 
 
-// TODO log analytics custom events
-
-
 @main
 struct TheApp: App {
     

@@ -102,6 +102,7 @@ private struct MainView: View {
             errorVisible = true
         }
         state = .READY
+        TheAnalytics.logUpdateApply()
     }
 }
 

@@ -186,6 +186,7 @@ private struct MainView: View {
         } else {
             state = .ERROR
         }
+        TheAnalytics.logUpdateCheck()
     }
     
     @Sendable
@@ -238,6 +239,7 @@ private struct MainView: View {
         } else {
             state = .ERROR
         }
+        TheAnalytics.logUpdateApply()
     }
     
     @ViewBuilder
