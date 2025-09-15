@@ -8,42 +8,41 @@
 import SwiftUI
 
 
+// TODO empty content
+
 struct StarredView: View {
-    var isPreview: Bool = false
-    
     @State private var resultList: [SongTitle]? = nil
+    private let isPreview: Bool
+    
+    init() {
+        self.resultList = nil
+        self.isPreview = false
+    }
+    
+    fileprivate init(resultList: [SongTitle]?) {
+        self.resultList = resultList
+        self.isPreview = true
+    }
     
     var body: some View {
         ZStack {
             BackgroundView()
             if let resultList {
-                if #available(iOS 16.0, *) {
-                    List(resultList) { result in
-                        ResultRow(result: result)
-                    }
-                    .scrollContentBackground(.hidden)
-                } else {
-                    List(resultList) { result in
-                        ResultRow(result: result)
-                    }
-                    .listStyle(.plain)
+                List(resultList) { result in
+                    ResultRow(result: result, isPreview: isPreview)
                 }
+                .scrollContentBackground(.hidden)
             } else {
                 ProgressView()
             }
         }
         .navigationTitle("Starred")
         .toolbar {
-            HomeToolbarContent()
+            HomeToolbarContent(isPreview: isPreview)
         }
-        .onAppear {
-            guard !isPreview else {
-                resultList = Demo.resultList
-                return
-            }
-            Task {
-                resultList = SongTitle.getStarred(db: TheDatabase())
-            }
+        .task {
+            if isPreview { return }
+            resultList = SongTitle.getStarred(db: TheDatabase())
         }
         .analyticsScreen(name: String(localized: "Starred"), class: "/starred/")
     }
@@ -51,13 +50,7 @@ struct StarredView: View {
 
 
 #Preview {
-    if #available(iOS 16.0, *) {
-        NavigationStack {
-            StarredView(isPreview: true)
-        }
-    } else {
-        NavigationView {
-            StarredView(isPreview: true)
-        }
+    NavigationStack {
+        StarredView(resultList: Demo.resultList)
     }
 }

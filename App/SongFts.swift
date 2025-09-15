@@ -97,11 +97,7 @@ class SongFts {
     
     static func tokenize(inString: String) -> String {
         var outString = inString.localizedLowercase
-        if #available(iOS 16.0, *) {
-            outString = outString.replacing(/<[^>]*>/, with: " ")
-        } else {
-            outString = outString.replacingOccurrences(of: "<[^>]*>", with: " ", options: .regularExpression)
-        }
+        outString = outString.replacing(/<[^>]*>/, with: " ")
         outString = outString.decomposedStringWithCanonicalMapping.unicodeScalars.reduce("", { acc, scalar in
             var ret = acc
             switch scalar.properties.generalCategory {
@@ -115,11 +111,7 @@ class SongFts {
             }
             return ret
         })
-        if #available(iOS 16.0, *) {
-            outString = outString.replacing(/\s+/, with: " ")
-        } else {
-            outString = outString.replacingOccurrences(of: "\\s+", with: " ", options: .regularExpression)
-        }
+        outString = outString.replacing(/\s+/, with: " ")
         outString = outString.trimmingCharacters(in: .whitespacesAndNewlines)
         return outString
     }
@@ -127,9 +119,9 @@ class SongFts {
     static func getColumnWeight(columnIndex: Int) -> Double {
         switch columnIndex {
         case 0:
-            return 2.0
+            2.0
         default:
-            return 1.0
+            1.0
         }
     }
 }

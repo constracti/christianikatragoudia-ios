@@ -16,7 +16,7 @@ enum MusicStep: CaseIterable {
     case B
     
     var name: Character {
-        return switch self {
+        switch self {
         case .C: "C"
         case .D: "D"
         case .E: "E"
@@ -28,7 +28,7 @@ enum MusicStep: CaseIterable {
     }
     
     var diatonic: Int {
-        return switch self {
+        switch self {
         case .C: 0
         case .D: 1
         case .E: 2
@@ -40,7 +40,7 @@ enum MusicStep: CaseIterable {
     }
     
     var chromatic: Int {
-        return switch self {
+        switch self {
         case .C: 0
         case .D: 2
         case .E: 4
@@ -62,10 +62,10 @@ enum MusicStep: CaseIterable {
     ))
     
     static func getByName(name: Character) -> MusicStep? {
-        return name2step[name]
+        name2step[name]
     }
     
     static func getByDiatonic(diatonic: Int) -> MusicStep? {
-        return diatonic2step[diatonic]
+        diatonic2step[diatonic]
     }
 }

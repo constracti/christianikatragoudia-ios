@@ -5,8 +5,6 @@
 //  Created by Konstantinos Raktivan on 06-05-2025.
 //
 
-import Foundation
-
 infix operator <=> : ComparisonPrecedence
 
 enum Spaceship {
@@ -15,7 +13,7 @@ enum Spaceship {
 }
 
 func <=>(lhs: Int, rhs: Int) -> Spaceship? {
-    return switch true {
+    switch true {
     case lhs < rhs:
         .asc
     case lhs > rhs:
@@ -26,7 +24,7 @@ func <=>(lhs: Int, rhs: Int) -> Spaceship? {
 }
 
 func <=>(lhs: Double, rhs: Double) -> Spaceship? {
-    return switch true {
+    switch true {
     case lhs < rhs:
         .asc
     case lhs > rhs:
@@ -37,7 +35,7 @@ func <=>(lhs: Double, rhs: Double) -> Spaceship? {
 }
 
 func <=>(lhs: String, rhs: String) -> Spaceship? {
-    return switch lhs.localizedCaseInsensitiveCompare(rhs) {
+    switch lhs.localizedCaseInsensitiveCompare(rhs) {
     case .orderedAscending:
         .asc
     case .orderedDescending:

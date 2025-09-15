@@ -11,28 +11,31 @@ import SwiftUI
 
 class SearchState {
     let query: String
-    let resultList: [SongTitle]?
-    let updateCheck: Bool?
+    let resultList: [SongTitle]
+    let updateCheck: Bool
     
-    init(query: String = "", resultList: [SongTitle]? = nil, updateCheck: Bool? = nil) {
+    init(query: String, resultList: [SongTitle], updateCheck: Bool) {
         self.query = query
         self.resultList = resultList
         self.updateCheck = updateCheck
     }
     
-    static func getResultList(db: TheDatabase, query: String) async -> [SongTitle] {
-        guard !query.isEmpty else {
-            return SongTitle.getAll(db: db)
+    init(db: TheDatabase, query: String, updateCheck: Bool) {
+        self.query = query
+        if query.isEmpty {
+            self.resultList = SongTitle.getAll(db: db)
+        } else {
+            // TODO prioritize consecutive search tokens
+            let fullTextQuery = SongFts
+                .tokenize(inString: query)
+                .components(separatedBy: " ")
+                .map { "\"\($0)\" OR \"\($0)*\""}
+                .joined(separator: " OR ")
+            self.resultList = SongMatch
+                .getByQuery(db: db, query: fullTextQuery)
+                .map { SongTitle(songMatch: $0) }
         }
-        TheAnalytics.logShare(query: query)
-        let fullTextQuery = SongFts
-            .tokenize(inString: query)
-            .components(separatedBy: " ")
-            .map { "\"\($0)\" OR \"\($0)*\""}
-            .joined(separator: " OR ")
-        return SongMatch
-            .getByQuery(db: db, query: fullTextQuery)
-            .map { SongTitle(songMatch: $0) }
+        self.updateCheck = updateCheck
     }
     
     static func cachedUpdateCheck(db: TheDatabase) -> Bool {
@@ -45,33 +48,24 @@ class SearchState {
         return oldTimestamp < newTimestamp
     }
     
-    func copyWithQuery(query: String) -> SearchState {
-        SearchState(query: query, resultList: self.resultList, updateCheck: self.updateCheck)
-    }
-    
-    func copyWithResultList(resultList: [SongTitle]?) -> SearchState {
-        SearchState(query: self.query, resultList: resultList, updateCheck: self.updateCheck)
-    }
-    
-    func copyWithUpdateCheck(updateCheck: Bool?) -> SearchState {
+    func copyWithUpdateCheck(updateCheck: Bool) -> SearchState {
         SearchState(query: self.query, resultList: self.resultList, updateCheck: updateCheck)
     }
 }
 
 
-extension Binding<SearchState> {
+extension Binding<SearchState?> {
     
-    func bindQuery() -> Binding<String> {
+    func bindQuery(isPreview: Bool) -> Binding<String> {
         Binding<String>(
             get: {
-                self.wrappedValue.query
+                guard let searchState = wrappedValue else { preconditionFailure() }
+                return searchState.query
             },
             set: { query in
-                self.wrappedValue = self.wrappedValue.copyWithQuery(query: query)
-                Task {
-                    self.wrappedValue = await self.wrappedValue
-                        .copyWithResultList(resultList: SearchState.getResultList(db: TheDatabase(), query: self.wrappedValue.query))
-                }
+                guard let searchState = wrappedValue else { return }
+                if isPreview { return }
+                wrappedValue = SearchState(db: TheDatabase(), query: query, updateCheck: searchState.updateCheck)
             },
         )
     }

@@ -14,14 +14,7 @@ class SongTitle: Identifiable, Comparable {
     init(id: Int, title: String, excerpt: String) {
         self.id = id
         self.title = title
-        if #available(iOS 16.0, *) {
-            self.excerpt = String(excerpt.split(separator: /\r\n|\r|\n/).first!)
-        } else {
-            self.excerpt = excerpt
-                .replacingOccurrences(of: "\r\n|\r|\n", with: "\n", options: .regularExpression)
-                .components(separatedBy: "\n")
-                .first!
-        }
+        self.excerpt = String(excerpt.split(separator: /\r\n|\r|\n/).first!)
     }
     
     convenience init(song: Song) {

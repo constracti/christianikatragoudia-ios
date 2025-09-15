@@ -9,60 +9,43 @@ import SwiftUI
 
 
 struct OptionsView: View {
+    private let isPreview: Bool
     
-    @State private var clearRecentVisible: Bool = false
-    @State private var resetTonalityVisible: Bool = false
-    @State private var resetZoomVisible: Bool = false
+    init() {
+        self.isPreview = false
+    }
+    
+    fileprivate init(isPreview: Bool) {
+        self.isPreview = isPreview
+    }
     
     var body: some View {
         ZStack {
             BackgroundView()
-            if #available(iOS 16.0, *) {
-                List(content: listContent)
-                    .scrollContentBackground(.hidden)
-            } else {
-                List(content: listContent)
-                    .listStyle(.plain)
+            List {
+                SettingsSection(isPreview: isPreview)
+                ToolsSection(isPreview: isPreview)
+                AppSection()
             }
+            .scrollContentBackground(.hidden)
         }
         .navigationTitle("Options")
-        .alert("ClearRecent", isPresented: $clearRecentVisible, actions: {
-            Button("Cancel", role: .cancel, action: {})
-            Button("Clear", role: .destructive, action: {
-                SongMeta.clearVisited(db: TheDatabase())
-            })
-            .keyboardShortcut(.defaultAction)
-        }, message: {
-            Text("ClearRecentMessage")
-        })
-        .alert("ResetTonality", isPresented: $resetTonalityVisible, actions: {
-            Button("Cancel", role: .cancel, action: {})
-            Button("Reset", role: .destructive, action: {
-                ChordMeta.resetTonality(db: TheDatabase())
-            })
-            .keyboardShortcut(.defaultAction)
-        }, message: {
-            Text("ResetTonalityMessage")
-        })
-        .alert("ResetZoom", isPresented: $resetZoomVisible, actions: {
-            Button("Cancel", role: .cancel, action: {})
-            Button("Reset", role: .destructive, action: {
-                let db = TheDatabase()
-                SongMeta.resetZoom(db: db)
-                ChordMeta.resetZoom(db: db)
-            })
-            .keyboardShortcut(.defaultAction)
-        }, message: {
-            Text("ResetZoomMessage")
-        })
         .analyticsScreen(name: String(localized: "Options"), class: "/options/")
     }
+}
+
+
+private struct SettingsSection: View {
+    let isPreview: Bool
     
-    @ViewBuilder
-    private func listContent() -> some View {
+    var body: some View {
         Section("Settings") {
             NavigationLink(destination: {
-                TonalitiesView()
+                if isPreview {
+                    EmptyView()
+                } else {
+                    TonalitiesView()
+                }
             }, label: {
                 VStack(alignment: .leading) {
                     Text("Tonalities")
@@ -72,9 +55,24 @@ struct OptionsView: View {
             })
         }
         .listRowBackground(ListBackground())
+    }
+}
+
+
+private struct ToolsSection: View {
+    let isPreview: Bool
+    @State private var clearRecentVisible: Bool = false
+    @State private var resetTonalityVisible: Bool = false
+    @State private var resetZoomVisible: Bool = false
+    
+    var body: some View {
         Section("Tools") {
             NavigationLink(destination: {
-                UpdateView()
+                if isPreview {
+                    EmptyView()
+                } else {
+                    UpdateView()
+                }
             }, label: {
                 VStack(alignment: .leading) {
                     Text("Update")
@@ -94,6 +92,47 @@ struct OptionsView: View {
         }
         .listRowBackground(ListBackground())
         .buttonStyle(.plain)
+        .alert("ClearRecent", isPresented: $clearRecentVisible, actions: {
+            Button("Cancel", role: .cancel, action: {})
+            Button("Clear", role: .destructive, action: {
+                if isPreview { return }
+                let db = TheDatabase()
+                SongMeta.clearVisited(db: db)
+            })
+            .keyboardShortcut(.defaultAction)
+        }, message: {
+            Text("ClearRecentMessage")
+        })
+        .alert("ResetTonality", isPresented: $resetTonalityVisible, actions: {
+            Button("Cancel", role: .cancel, action: {})
+            Button("Reset", role: .destructive, action: {
+                if isPreview { return }
+                let db = TheDatabase()
+                ChordMeta.resetTonality(db: db)
+            })
+            .keyboardShortcut(.defaultAction)
+        }, message: {
+            Text("ResetTonalityMessage")
+        })
+        .alert("ResetZoom", isPresented: $resetZoomVisible, actions: {
+            Button("Cancel", role: .cancel, action: {})
+            Button("Reset", role: .destructive, action: {
+                if isPreview { return }
+                let db = TheDatabase()
+                SongMeta.resetZoom(db: db)
+                ChordMeta.resetZoom(db: db)
+            })
+            .keyboardShortcut(.defaultAction)
+        }, message: {
+            Text("ResetZoomMessage")
+        })
+    }
+}
+
+
+private struct AppSection: View {
+
+    var body: some View {
         Section("App") {
             NavigationLink("Information") {
                 InformationView()
@@ -123,13 +162,7 @@ struct OptionsView: View {
 
 
 #Preview {
-    if #available(iOS 16.0, *) {
-        NavigationStack {
-            OptionsView()
-        }
-    } else {
-        NavigationView {
-            OptionsView()
-        }
+    NavigationStack {
+        OptionsView(isPreview: true)
     }
 }

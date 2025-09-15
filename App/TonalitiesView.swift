@@ -9,8 +9,18 @@ import SwiftUI
 
 
 struct TonalitiesView: View {
+    @State private var hiddenTonalities: Set<MusicNote>?
+    private let isPreview: Bool
     
-    @State private var hiddenTonalities: Set<MusicNote>? = nil
+    init() {
+        self.hiddenTonalities = nil
+        self.isPreview = false
+    }
+    
+    fileprivate init(hiddenTonalities: Set<MusicNote>?) {
+        self.hiddenTonalities = hiddenTonalities
+        self.isPreview = true
+    }
     
     var body: some View {
         ZStack {
@@ -18,6 +28,7 @@ struct TonalitiesView: View {
             if hiddenTonalities == nil {
                 ProgressView()
                     .task {
+                        if isPreview { return }
                         hiddenTonalities = Config.getHiddenTonalities(db: TheDatabase()) ?? MusicNote.ENHARMONIC_TONALITIES
                     }
             } else {
@@ -45,6 +56,7 @@ struct TonalitiesView: View {
                                             } else {
                                                 hiddenTonalities!.insert(tonality)
                                             }
+                                            if isPreview { return }
                                             Config.setHiddenTonalities(db: TheDatabase(), value: hiddenTonalities)
                                         },
                                     ))
@@ -68,6 +80,7 @@ struct TonalitiesView: View {
             ToolbarItem(placement: .bottomBar) {
                 Button("Reset") {
                     hiddenTonalities = MusicNote.ENHARMONIC_TONALITIES
+                    if isPreview { return }
                     Config.setHiddenTonalities(db: TheDatabase(), value: nil)
                 }
             }
@@ -77,13 +90,7 @@ struct TonalitiesView: View {
 }
 
 #Preview {
-    if #available(iOS 16.0, *) {
-        NavigationStack {
-            TonalitiesView()
-        }
-    } else {
-        NavigationView {
-            TonalitiesView()
-        }
+    NavigationStack {
+        TonalitiesView(hiddenTonalities: MusicNote.ENHARMONIC_TONALITIES)
     }
 }

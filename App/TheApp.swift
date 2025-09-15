@@ -8,6 +8,8 @@
 import SwiftUI
 
 
+// TODO use @ScaledMetric for spacing
+
 @main
 struct TheApp: App {
     
@@ -17,10 +19,12 @@ struct TheApp: App {
     
     var body: some Scene {
         WindowGroup {
-            if passed {
-                SearchView()
-            } else {
-                WelcomeView(passed: $passed)
+            NavigationStack {
+                if passed {
+                    SearchView()
+                } else {
+                    WelcomeView(passed: $passed)
+                }
             }
         }
     }

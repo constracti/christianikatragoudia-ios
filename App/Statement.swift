@@ -14,11 +14,11 @@ class Statement {
     private var stmt: OpaquePointer!
     
     init(db: TheDatabase, sql: String) {
-        assert(sqlite3_prepare_v2(db.get(), sql, -1, &stmt, nil) == SQLITE_OK)
+        precondition(sqlite3_prepare_v2(db.get(), NSString(string: sql).utf8String!, -1, &stmt, nil) == SQLITE_OK)
     }
     
     deinit {
-        assert(sqlite3_finalize(stmt) == SQLITE_OK)
+        precondition(sqlite3_finalize(stmt) == SQLITE_OK)
     }
     
     enum STEP {
@@ -29,24 +29,24 @@ class Statement {
     func step() -> STEP {
         switch sqlite3_step(stmt) {
         case SQLITE_DONE:
-            return .DONE
+            .DONE
         case SQLITE_ROW:
-            return .ROW
+            .ROW
         default:
-            assert(false)
+            preconditionFailure()
         }
     }
     
     func stepDone() {
-        assert(step() == .DONE)
+        precondition(step() == .DONE)
     }
     
     func stepRow() {
-        assert(step() == .ROW)
+        precondition(step() == .ROW)
     }
     
     func reset() {
-        assert(sqlite3_reset(stmt) == SQLITE_OK)
+        precondition(sqlite3_reset(stmt) == SQLITE_OK)
     }
     
     func bindBool(index: Int32, value: Bool) -> Void {
@@ -54,22 +54,22 @@ class Statement {
     }
     
     func bindInt(index: Int32, value: Int) -> Void {
-        assert(sqlite3_bind_int(stmt, index, Int32(value)) == SQLITE_OK)
+        precondition(sqlite3_bind_int(stmt, index, Int32(value)) == SQLITE_OK)
     }
     
     func bindDouble(index: Int32, value: Double) -> Void {
-        assert(sqlite3_bind_double(stmt, index, value) == SQLITE_OK)
+        precondition(sqlite3_bind_double(stmt, index, value) == SQLITE_OK)
     }
     
     func bindString(index: Int32, value: String) -> Void {
-        assert(sqlite3_bind_text(stmt, index, NSString(string: value).utf8String, -1, nil) == SQLITE_OK)
+        precondition(sqlite3_bind_text(stmt, index, NSString(string: value).utf8String!, -1, nil) == SQLITE_OK)
     }
     
     func bindStringNullable(index: Int32, value: String?) -> Void {
         if value != nil {
-            assert(sqlite3_bind_text(stmt, index, NSString(string: value!).utf8String, -1, nil) == SQLITE_OK)
+            precondition(sqlite3_bind_text(stmt, index, NSString(string: value!).utf8String, -1, nil) == SQLITE_OK)
         } else {
-            assert(sqlite3_bind_null(stmt, index) == SQLITE_OK)
+            precondition(sqlite3_bind_null(stmt, index) == SQLITE_OK)
         }
     }
     
@@ -87,19 +87,19 @@ class Statement {
     
     func readInt(index: Int32) -> Int {
         let type = sqlite3_column_type(stmt, index)
-        assert(type == SQLITE_INTEGER)
+        precondition(type == SQLITE_INTEGER)
         return Int(sqlite3_column_int(stmt, index))
     }
     
     func readDouble(index: Int32) -> Double {
         let type = sqlite3_column_type(stmt, index)
-        assert(type == SQLITE_FLOAT)
+        precondition(type == SQLITE_FLOAT)
         return sqlite3_column_double(stmt, index)
     }
     
     func readString(index: Int32) -> String {
         let type = sqlite3_column_type(stmt, index)
-        assert(type == SQLITE_TEXT)
+        precondition(type == SQLITE_TEXT)
         return String(cString: sqlite3_column_text(stmt, index))
     }
     
@@ -108,7 +108,7 @@ class Statement {
         if type == SQLITE_NULL {
             return nil
         }
-        assert(type == SQLITE_TEXT)
+        precondition(type == SQLITE_TEXT)
         return String(cString: sqlite3_column_text(stmt, index))
     }
     
@@ -126,7 +126,7 @@ class Statement {
     
     func readData(index: Int32) -> Data {
         let type = sqlite3_column_type(stmt, index)
-        assert(type == SQLITE_BLOB)
+        precondition(type == SQLITE_BLOB)
         return Data(
             bytes: sqlite3_column_blob(stmt, index),
             count: Int(sqlite3_column_bytes(stmt, index)),

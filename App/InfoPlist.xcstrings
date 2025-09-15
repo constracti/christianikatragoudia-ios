@@ -2,7 +2,7 @@
   "sourceLanguage" : "en",
   "strings" : {
     "CFBundleDisplayName" : {
-      "extractionState" : "manual",
+      "comment" : "Bundle display name",
       "localizations" : {
         "el" : {
           "stringUnit" : {
@@ -19,12 +19,18 @@
       }
     },
     "CFBundleName" : {
-      "extractionState" : "manual",
+      "comment" : "Bundle name",
       "localizations" : {
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Εφαρμογή"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ChristianSongs"
+            "value" : "App"
           }
         }
       }

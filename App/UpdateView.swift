@@ -9,33 +9,33 @@ import SwiftUI
 
 
 private enum ViewState {
-    case CHECK
-    case APPLY
-    case READY([UpdateAction: [SongTitle]])
-    case ERROR
+    case check
+    case apply
+    case ready([UpdateAction: [SongTitle]])
+    case error
     
     var canCheck: Bool {
-        return switch self {
-        case .CHECK:
+        switch self {
+        case .check:
             false
-        case .APPLY:
+        case .apply:
             false
-        case .READY(_):
+        case .ready:
             true
-        case .ERROR:
+        case .error:
             true
         }
     }
     
     var canApply: Bool {
-        return switch self {
-        case .CHECK:
+        switch self {
+        case .check:
             false
-        case .APPLY:
+        case .apply:
             false
-        case .READY(let actionMap):
+        case .ready(let actionMap):
             !actionMap.isEmpty
-        case .ERROR:
+        case .error:
             false
         }
     }
@@ -47,7 +47,7 @@ enum UpdateAction: Int {
     case EDIT
     
     var title: String {
-        return switch self {
+        switch self {
         case .ADD:
             String(localized: "DownloadAdd")
         case .EDIT:
@@ -58,29 +58,30 @@ enum UpdateAction: Int {
 
 
 struct UpdateView: View {
+    @State private var state: ViewState
+    private let isPreview: Bool
     
-    @State private var state: ViewState = .CHECK
-    
-    var body: some View {
-        MainView(state: $state)
+    init() {
+        self.state = .check
+        self.isPreview = false
     }
-}
-
-
-private struct MainView: View {
-    @Binding var state: ViewState
+    
+    fileprivate init(state: ViewState) {
+        self.state = state
+        self.isPreview = true
+    }
     
     var body: some View {
         ZStack {
             BackgroundView()
             switch state {
-            case .CHECK:
+            case .check:
                 ProgressView()
                     .task(checkTask)
-            case .APPLY:
+            case .apply:
                 ProgressView()
                     .task(applyTask)
-            case .READY(let actionMap):
+            case .ready(let actionMap):
                 if actionMap.isEmpty {
                     VStack {
                         Image(systemName: "checkmark.circle")
@@ -90,9 +91,9 @@ private struct MainView: View {
                             .padding()
                     }
                 } else {
-                    readyView(actionMap: actionMap)
+                    ReadyContent(actionMap: actionMap)
                 }
-            case .ERROR:
+            case .error:
                 VStack {
                     Image(systemName: "multiply.circle")
                         .padding()
@@ -103,27 +104,15 @@ private struct MainView: View {
             }
         }
         .navigationTitle("Update")
-        .toolbar(content: toolbarContent)
-        .analyticsScreen(name: String(localized: "Update"), class: "/options/update/")
-    }
-    
-    private func toolbarContent() -> some ToolbarContent {
-        ToolbarItemGroup(placement: .bottomBar) {
-            Button("Check") {
-                state = .CHECK
-            }
-            .disabled(!state.canCheck)
-            Button("Download", systemImage: "square.and.arrow.down") {
-                state = .APPLY
-            }
-            .buttonStyle(.borderedProminent)
-            .labelStyle(.titleAndIcon)
-            .disabled(!state.canApply)
+        .toolbar {
+            ViewToolbar(state: $state)
         }
+        .analyticsScreen(name: String(localized: "Update"), class: "/options/update/")
     }
     
     @Sendable
     private func checkTask() async -> Void {
+        if isPreview { return }
         let db = TheDatabase()
         let after = Config.getUpdateTimestamp(db: db)
         if let patch = await Patch.get(after: after, full: false) {
@@ -182,15 +171,16 @@ private struct MainView: View {
             if actionMap.isEmpty {
                 Config.setUpdateCheck(db: db, value: false)
             }
-            state = .READY(actionMap)
+            state = .ready(actionMap)
         } else {
-            state = .ERROR
+            state = .error
         }
         TheAnalytics.logUpdateCheck()
     }
     
     @Sendable
     private func applyTask() async -> Void {
+        if isPreview { return }
         let db = TheDatabase()
         let after = Config.getUpdateTimestamp(db: db)
         if let patch = await Patch.get(after: after, full: true) {
@@ -223,6 +213,7 @@ private struct MainView: View {
                 !patch.chordIdSet.contains(chord.id)
             })
             // run
+            db.beginTransaction()
             Song.insert(db: db, songList: insSongList)
             SongFts.insert(db: db, ftsList: insSongList.map({ SongFts(song: $0) }))
             Song.update(db: db, songList: updSongList)
@@ -235,87 +226,83 @@ private struct MainView: View {
             Chord.delete(db: db, chordList: delChordList)
             Config.setUpdateTimestamp(db: db, value: patch.timestamp)
             Config.setUpdateCheck(db: db, value: false)
-            state = .READY([:])
+            db.commitTransaction()
+            state = .ready([:])
         } else {
-            state = .ERROR
+            state = .error
         }
         TheAnalytics.logUpdateApply()
     }
+}
+
+
+private struct ReadyContent: View {
+    let actionMap: [UpdateAction: [SongTitle]]
     
-    @ViewBuilder
-    private func readyView(actionMap: [UpdateAction: [SongTitle]]) -> some View {
-        if #available(iOS 16.0, *) {
-            List {
-                readyListContent(actionMap: actionMap)
-            }
-            .scrollContentBackground(.hidden)
-        } else {
-            List {
-                readyListContent(actionMap: actionMap)
-            }
-            .listStyle(.plain)
-        }
-    }
-    
-    private func readyListContent(actionMap: [UpdateAction: [SongTitle]]) -> some View {
-        ForEach(actionMap.sorted(by: { lhs, rhs in
-            lhs.key.rawValue < rhs.key.rawValue
-        }).map({ action, resultList in
-            (action, resultList.sorted())
-        }), id: \.0, content: { action, resultList in
-            let title = "\(action.title) (\(resultList.count))"
-            Section(title) {
-                ForEach(resultList) { result in
-                    VStack(alignment: .leading) {
-                        Text(result.title)
-                            .font(.headline)
-                        if (result.title != result.excerpt) {
-                            Text(result.excerpt)
-                                .font(.subheadline)
+    var body: some View {
+        List {
+            ForEach(actionMap.sorted(by: { lhs, rhs in
+                lhs.key.rawValue < rhs.key.rawValue
+            }).map({ action, resultList in
+                (action, resultList.sorted())
+            }), id: \.0, content: { action, resultList in
+                let title = "\(action.title) (\(resultList.count))"
+                Section(title) {
+                    ForEach(resultList) { result in
+                        VStack(alignment: .leading) {
+                            Text(result.title)
+                                .font(.headline)
+                            if (result.title != result.excerpt) {
+                                Text(result.excerpt)
+                                    .font(.subheadline)
+                            }
                         }
                     }
                 }
-            }
-            .listRowBackground(ListBackground())
-        })
+                .listRowBackground(ListBackground())
+            })
+        }
+        .scrollContentBackground(.hidden)
+    }
+}
+
+
+private struct ViewToolbar: ToolbarContent {
+    @Binding var state: ViewState
+    
+    var body: some ToolbarContent {
+        ToolbarItemGroup(placement: .bottomBar) {
+            Button("Check", action: {
+                state = .check
+            })
+            .disabled(!state.canCheck)
+            Button("Download", systemImage: "square.and.arrow.down", action: {
+                state = .apply
+            })
+            .buttonStyle(.borderedProminent)
+            .labelStyle(.titleAndIcon)
+            .disabled(!state.canApply)
+        }
     }
 }
 
 
 #Preview("Ready") {
-    if #available(iOS 16.0, *) {
-        NavigationStack {
-            MainView(state: .constant(.READY(Demo.actionMap)))
-        }
-    } else {
-        NavigationView {
-            MainView(state: .constant(.READY(Demo.actionMap)))
-        }
+    NavigationStack {
+        UpdateView(state: .ready(Demo.actionMap))
     }
 }
 
 
 #Preview("Final") {
-    if #available(iOS 16.0, *) {
-        NavigationStack {
-            MainView(state: .constant(.READY([:])))
-        }
-    } else {
-        NavigationView {
-            MainView(state: .constant(.READY([:])))
-        }
+    NavigationStack {
+        UpdateView(state: .ready([:]))
     }
 }
 
 
 #Preview("Error") {
-    if #available(iOS 16.0, *) {
-        NavigationStack {
-            MainView(state: .constant(.ERROR))
-        }
-    } else {
-        NavigationView {
-            MainView(state: .constant(.ERROR))
-        }
+    NavigationStack {
+        UpdateView(state: .error)
     }
 }

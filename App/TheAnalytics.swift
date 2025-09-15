@@ -15,12 +15,6 @@ class TheAnalytics {
     private static let EVENT_UPDATE_CHECK: String = "update_check"
     private static let EVENT_UPDATE_APPLY: String = "update_apply"
     
-    static func logShare(query: String) -> Void {
-        Analytics.logEvent(AnalyticsEventSearch, parameters: [
-            AnalyticsParameterSearchTerm: query,
-        ])
-    }
-    
     static func logUpdateCheck() -> Void {
         Analytics.logEvent(EVENT_UPDATE_CHECK, parameters: nil)
     }

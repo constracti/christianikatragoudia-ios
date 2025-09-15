@@ -54,13 +54,7 @@ struct InformationView: View {
 
 
 #Preview {
-    if #available(iOS 16.0, *) {
-        NavigationStack {
-            InformationView()
-        }
-    } else {
-        NavigationView {
-            InformationView()
-        }
+    NavigationStack {
+        InformationView()
     }
 }

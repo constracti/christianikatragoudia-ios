@@ -8,42 +8,41 @@
 import SwiftUI
 
 
+// TODO empty content
+
 struct RecentView: View {
-    var isPreview: Bool = false
+    @State private var resultList: [SongTitle]?
+    private let isPreview: Bool
+
+    init() {
+        self.resultList = nil
+        self.isPreview = false
+    }
     
-    @State private var resultList: [SongTitle]? = nil
+    fileprivate init(resultList: [SongTitle]?) {
+        self.resultList = resultList
+        self.isPreview = true
+    }
     
     var body: some View {
         ZStack {
             BackgroundView()
             if let resultList {
-                if #available(iOS 16.0, *) {
-                    List(resultList) { result in
-                        ResultRow(result: result)
-                    }
-                    .scrollContentBackground(.hidden)
-                } else {
-                    List(resultList) { result in
-                        ResultRow(result: result)
-                    }
-                    .listStyle(.plain)
+                List(resultList) { result in
+                    ResultRow(result: result, isPreview: isPreview)
                 }
+                .scrollContentBackground(.hidden)
             } else {
                 ProgressView()
             }
         }
         .navigationTitle("Recent")
         .toolbar {
-            HomeToolbarContent()
+            HomeToolbarContent(isPreview: isPreview)
         }
-        .onAppear {
-            guard !isPreview else {
-                resultList = Demo.resultList
-                return
-            }
-            Task {
-                resultList = SongTitle.getRecent(db: TheDatabase())
-            }
+        .task {
+            if isPreview { return }
+            resultList = SongTitle.getRecent(db: TheDatabase())
         }
         .analyticsScreen(name: String(localized: "Recent"), class: "/recent/")
     }
@@ -51,13 +50,7 @@ struct RecentView: View {
 
 
 #Preview {
-    if #available(iOS 16.0, *) {
-        NavigationStack {
-            RecentView(isPreview: true)
-        }
-    } else {
-        NavigationView {
-            RecentView(isPreview: true)
-        }
+    NavigationStack {
+        RecentView(resultList: Demo.resultList)
     }
 }

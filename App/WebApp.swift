@@ -33,27 +33,13 @@ class WebApp {
     }
     
     static var ajaxUrl: URL {
-        if #available(iOS 16.0, *) {
-            return homeUrl.appending(components: "wp-admin", "admin-ajax.php")
-        } else {
-            var urlComp = homeComponents
-            urlComp.path = "/wp-admin/admin-ajax.php"
-            return urlComp.url!
-        }
+        homeUrl.appending(components: "wp-admin", "admin-ajax.php")
     }
     
     static func getUpdateTimestamp() async -> Int? {
-        let queryItems = [
+        let url = ajaxUrl.appending(queryItems: [
             URLQueryItem(name: "action", value: "xt_app_notification_1"),
-        ]
-        let url: URL
-        if #available(iOS 16.0, *) {
-            url = ajaxUrl.appending(queryItems: queryItems)
-        } else {
-            var urlComp = URLComponents(string: ajaxUrl.absoluteString)!
-            urlComp.queryItems = queryItems
-            url = urlComp.url!
-        }
+        ])
         do {
             let tuple = try await URLSession.shared.data(from: url)
             let (data, response) = (tuple.0, tuple.1 as! HTTPURLResponse)

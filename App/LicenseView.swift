@@ -18,18 +18,7 @@ struct LicenseView: View {
                     Text("LicenseLong")
                     Image("license")
                     Divider()
-                    let markdown = [
-                        String(localized: "LicenseIntroduction"),
-                        "",
-                        "**" + String(localized: "LicenseAttributionTitle") + "**",
-                        String(localized: "LicenseAttributionContent"),
-                        "",
-                        "**" + String(localized: "LicenseNonCommercialTitle") + "**",
-                        String(localized: "LicenseNonCommercialContent"),
-                        "",
-                        "**" + String(localized: "LicenseShareAlikeTitle") + "**",
-                        String(localized: "LicenseShareAlikeContent"),
-                    ].joined(separator: "\n")
+                    let markdown = String(localized: "LicenseContent")
                     if let rich = try? AttributedString(
                         markdown: markdown,
                         options: AttributedString.MarkdownParsingOptions(
@@ -46,8 +35,10 @@ struct LicenseView: View {
         }
         .navigationTitle("License")
         .toolbar {
-            ToolbarItem(placement: .bottomBar) {
-                Link("Details", destination: URL(string: String(localized: "LicenseUrl"))!)
+            if let url = URL(string: String(localized: "LicenseUrl")) {
+                ToolbarItem(placement: .bottomBar) {
+                    Link("Details", destination: url)
+                }
             }
         }
         .analyticsScreen(name: String(localized: "License"), class: "/license/")
@@ -56,13 +47,7 @@ struct LicenseView: View {
 
 
 #Preview {
-    if #available(iOS 16.0, *) {
-        NavigationStack {
-            LicenseView()
-        }
-    } else {
-        NavigationView {
-            LicenseView()
-        }
+    NavigationStack {
+        LicenseView()
     }
 }

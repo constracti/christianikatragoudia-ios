@@ -8,42 +8,139 @@
 import SwiftUI
 
 
-struct SongView: View {
-    let id: Int
+private enum ViewState {
+    case start(Int)
+    case ready(ReadyState)
+}
+
+
+extension Binding<ViewState> {
     
-    @State private var song: Song? = nil
-    @State private var songMeta: SongMeta? = nil
-    @State private var chord: Chord? = nil
-    @State private var chordMeta: ChordMeta? = nil
-    @State private var hiddenTonalities: Set<MusicNote>? = nil
-    @State private var loading: Bool = true
+    fileprivate func bindReadyState() -> Binding<ReadyState> {
+        Binding<ReadyState>(
+            get: {
+                switch wrappedValue {
+                case .start:
+                    preconditionFailure()
+                case .ready(let readyState):
+                    readyState
+                }
+            }, set: { readyState in
+                switch wrappedValue {
+                case .start:
+                    preconditionFailure()
+                case .ready:
+                    wrappedValue = .ready(readyState)
+                }
+            },
+        )
+    }
+}
+
+
+private struct ReadyState {
+    let song: Song
+    let songMeta: SongMeta
+    let chord: Chord
+    let chordMeta: ChordMeta
+    let hiddenTonalities: Set<MusicNote>
+    
+    func copyWithSongMeta(songMeta: SongMeta) -> ReadyState {
+        ReadyState(
+            song: self.song,
+            songMeta: songMeta,
+            chord: self.chord,
+            chordMeta: self.chordMeta,
+            hiddenTonalities: self.hiddenTonalities,
+        )
+    }
+    
+    func copyWithChordMeta(chordMeta: ChordMeta) -> ReadyState {
+        ReadyState(
+            song: self.song,
+            songMeta: self.songMeta,
+            chord: self.chord,
+            chordMeta: chordMeta,
+            hiddenTonalities: self.hiddenTonalities,
+        )
+    }
+}
+
+
+extension Binding<ReadyState> {
+    
+    func bindSongMeta() -> Binding<SongMeta> {
+        Binding<SongMeta>(
+            get: {
+                wrappedValue.songMeta
+            }, set: { songMeta in
+                wrappedValue = wrappedValue.copyWithSongMeta(songMeta: songMeta)
+            },
+        )
+    }
+    
+    func bindChordMeta() -> Binding<ChordMeta> {
+        Binding<ChordMeta>(
+            get: {
+                wrappedValue.chordMeta
+            }, set: { chordMeta in
+                wrappedValue = wrappedValue.copyWithChordMeta(chordMeta: chordMeta)
+            },
+        )
+    }
+}
+
+
+struct SongView: View {
+    @State private var viewState: ViewState
+    private let isPreview: Bool
+    
+    init(id: Int) {
+        self.viewState = .start(id)
+        self.isPreview = false
+    }
+    
+    fileprivate init(viewState: ViewState) {
+        self.viewState = viewState
+        self.isPreview = true
+    }
     
     var body: some View {
-        if loading {
+        switch viewState {
+        case .start(let id):
             ZStack {
                 BackgroundView()
                 ProgressView()
             }
             .task {
+                if isPreview { return }
                 let db = TheDatabase()
-                song = Song.getById(db: db, id: id)
-                guard let song else { return }
-                chord = Chord.getByParent(db: db, parent: id)
-                guard let chord else { return }
-                let visited = Date.now.formatted(.iso8601.dateTimeSeparator(.space)).replacingOccurrences(of: "Z", with: "")
-                songMeta = SongMeta.getById(db: db, id: song.id).copyWithVisited(visited: visited)
-                songMeta!.upsert(db: db)
-                chordMeta = ChordMeta.getById(db: db, id: chord.id)
-                hiddenTonalities = Config.getHiddenTonalities(db: db) ?? MusicNote.ENHARMONIC_TONALITIES
-                loading = false
+                guard let song = Song.getById(db: db, id: id) else { return }
+                guard let chord = Chord.getByParent(db: db, parent: id) else { return }
+                let visited = Date.now
+                    .formatted(.iso8601.dateTimeSeparator(.space))
+                    .replacing("Z", with: "")
+                let songMeta = SongMeta.getById(db: db, id: id).copyWithVisited(visited: visited)
+                songMeta.upsert(db: db)
+                let chordMeta = ChordMeta.getById(db: db, id: chord.id)
+                let hiddenTonalities = Config.getHiddenTonalities(db: db) ?? MusicNote.ENHARMONIC_TONALITIES
+                let readyState = ReadyState(
+                    song: song,
+                    songMeta: songMeta,
+                    chord: chord,
+                    chordMeta: chordMeta,
+                    hiddenTonalities: hiddenTonalities,
+                )
+                viewState = .ready(readyState)
             }
-        } else {
-            SongMain(
-                song: song!,
-                songMeta: Binding($songMeta)!,
-                chord: chord!,
-                chordMeta: Binding($chordMeta)!,
-                hiddenTonalities: hiddenTonalities!,
+        case .ready(let readyState):
+            MainView(
+                song: readyState.song,
+                songMeta: $viewState.bindReadyState().bindSongMeta(),
+                chord: readyState.chord,
+                chordMeta: $viewState.bindReadyState().bindChordMeta(),
+                hiddenTonalities: readyState.hiddenTonalities,
+                isPreview: isPreview,
             )
         }
     }
@@ -52,26 +149,28 @@ struct SongView: View {
 
 extension Binding<SongMeta> {
     
-    func bindZoom() -> Binding<Double> {
+    func bindZoom(isPreview: Bool) -> Binding<Double> {
         Binding<Double>(
             get: {
-                return self.wrappedValue.zoom
+                wrappedValue.zoom
             },
             set: { zoom in
-                self.wrappedValue = self.wrappedValue.copyWithZoom(zoom: zoom)
-                self.wrappedValue.upsert(db: TheDatabase())
+                wrappedValue = wrappedValue.copyWithZoom(zoom: zoom)
+                if isPreview { return }
+                wrappedValue.upsert(db: TheDatabase())
             },
         )
     }
     
-    func bindStarred() -> Binding<Bool> {
+    func bindStarred(isPreview: Bool) -> Binding<Bool> {
         Binding<Bool>(
             get: {
-                return self.wrappedValue.starred
+                wrappedValue.starred
             },
             set: { starred in
-                self.wrappedValue = self.wrappedValue.copyWithStarred(starred: starred)
-                self.wrappedValue.upsert(db: TheDatabase())
+                wrappedValue = wrappedValue.copyWithStarred(starred: starred)
+                if isPreview { return }
+                wrappedValue.upsert(db: TheDatabase())
             },
         )
     }
@@ -80,59 +179,62 @@ extension Binding<SongMeta> {
 
 extension Binding<ChordMeta> {
 
-    func bindTonality() -> Binding<MusicNote?> {
+    func bindTonality(isPreview: Bool) -> Binding<MusicNote?> {
         Binding<MusicNote?>(
             get: {
-                return self.wrappedValue.tonality
+                wrappedValue.tonality
             },
             set: { tonality in
-                self.wrappedValue = self.wrappedValue.copyWithTonality(tonality: tonality)
-                self.wrappedValue.upsert(db: TheDatabase())
+                wrappedValue = wrappedValue.copyWithTonality(tonality: tonality)
+                if isPreview { return }
+                wrappedValue.upsert(db: TheDatabase())
             },
         )
     }
     
-    func bindZoom() -> Binding<Double> {
+    func bindZoom(isPreview: Bool) -> Binding<Double> {
         Binding<Double>(
             get: {
-                return self.wrappedValue.zoom
+                wrappedValue.zoom
             },
             set: { zoom in
-                self.wrappedValue = self.wrappedValue.copyWithZoom(zoom: zoom)
-                self.wrappedValue.upsert(db: TheDatabase())
+                wrappedValue = wrappedValue.copyWithZoom(zoom: zoom)
+                if isPreview { return }
+                wrappedValue.upsert(db: TheDatabase())
             },
         )
     }
 }
 
 
-private struct SongMain: View {
+private struct MainView: View {
     let song: Song
     @Binding var songMeta: SongMeta
     let chord: Chord
     @Binding var chordMeta: ChordMeta
     let hiddenTonalities: Set<MusicNote>
+    let isPreview: Bool
 
     @State private var infoVisible: Bool = false
     
     var body: some View {
         ZStack {
             BackgroundView()
-            if chordMeta.tonality == nil {
-                SongLyrics(song: song, zoom: songMeta.zoom)
+            if let tonality = chordMeta.tonality {
+                ChordsView(chord: chord, tonality: tonality, zoom: chordMeta.zoom)
             } else {
-                SongChords(chord: chord, tonality: chordMeta.tonality!, zoom: chordMeta.zoom)
+                LyricsView(song: song, zoom: songMeta.zoom)
             }
         }
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
-            SongToolbar(
+            MainToolbar(
                 song: song,
                 defaultTonality: chord.tonality,
                 hiddenTonalities: hiddenTonalities,
-                starred: $songMeta.bindStarred(),
-                tonality: $chordMeta.bindTonality(),
-                zoom: chordMeta.tonality == nil ? $songMeta.bindZoom() : $chordMeta.bindZoom(),
+                starred: $songMeta.bindStarred(isPreview: isPreview),
+                tonality: $chordMeta.bindTonality(isPreview: isPreview),
+                zoom: chordMeta.tonality == nil ? $songMeta.bindZoom(isPreview: isPreview) : $chordMeta.bindZoom(isPreview: isPreview),
                 infoVisible: $infoVisible,
             )
         }
@@ -142,57 +244,40 @@ private struct SongMain: View {
         })
         .analyticsScreen(
             name: song.title,
-            class: song.permalink.replacingOccurrences(of: WebApp.homeString, with: "/"),
+            class: song.permalink.replacing(WebApp.homeString, with: "/"),
         )
     }
 }
 
 
-private struct SongLyrics: View {
+private struct LyricsView: View {
     let song: Song
     let zoom: Double
 
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 24.0 * zoom) {
-                if #available(iOS 16.0, *) {
-                    ForEach(Array(song.content.split(separator: /(?:\r\n|\r|\n){2,}/).enumerated()), id: \.offset) { _, html in
-                        if html == "<hr />" {
-                            Divider()
-                        } else if let rich = try? AttributedString(
-                            markdown: String(html)
-                                .replacing("*", with: "\\*")
-                                .replacing(/<\/?(?:i|em)>/, with: "*"),
-                            options: AttributedString.MarkdownParsingOptions(
-                                interpretedSyntax: .inlineOnly,
-                            ),
-                        ) {
-                            Text(rich)
-                        } else {
-                            Text(html)
-                        }
-                    }
-                } else {
-                    ForEach(Array(song.content.replacingOccurrences(of: "\r\n|\r|\n", with: "\n", options: .regularExpression).components(separatedBy: "\n\n").enumerated()), id: \.offset) { _, html in
-                        if html == "<hr />" {
-                            Divider()
-                        } else if let rich = try? AttributedString(
-                            markdown: String(html)
-                                .replacingOccurrences(of: "*", with: "\\*")
-                                .replacingOccurrences(of: "</?(?:i|em)>", with: "*", options: .regularExpression),
-                            options: AttributedString.MarkdownParsingOptions(
-                                interpretedSyntax: .inlineOnly,
-                            ),
-                        ) {
-                            Text(rich)
-                        } else {
-                            Text(html)
-                        }
+                let paragraphList = song.content.split(
+                    separator: /(?:\r\n|\r|\n){2,}/,
+                )
+                ForEach(Array(paragraphList.enumerated()), id: \.offset) { _, html in
+                    if html == "<hr />" {
+                        Divider()
+                    } else if let rich = try? AttributedString(
+                        markdown: String(html)
+                            .replacing("*", with: "\\*")
+                            .replacing(/<\/?(?:i|em)>/, with: "*"),
+                        options: AttributedString.MarkdownParsingOptions(
+                            interpretedSyntax: .inlineOnly,
+                        ),
+                    ) {
+                        Text(rich)
+                    } else {
+                        Text(html)
                     }
                 }
             }
             .padding()
-            // .navigationTitle(song.title)
             .frame(maxWidth: .infinity, alignment: .topLeading)
             .font(.system(size: 16.0 * zoom))
         }
@@ -200,7 +285,7 @@ private struct SongLyrics: View {
 }
 
 
-private struct SongChords: View {
+private struct ChordsView: View {
     let chord: Chord
     let tonality: MusicNote
     let zoom: Double
@@ -208,32 +293,27 @@ private struct SongChords: View {
     var body: some View {
         GeometryReader { geometry in
             ScrollView([.horizontal, .vertical]) {
-                VStack {
-                    VStack(alignment: .leading) {
-                        let interval = MusicInterval(src: chord.tonality, dst: tonality)
-                        if #available(iOS 16.0, *) {
-                            ForEach(Array(chord.content.split(separator: /\r\n|\r|\n/, omittingEmptySubsequences: false).enumerated()), id: \.offset) { _, line in
-                                if SongChords.isChordLine(line: String(line)) {
-                                    Text(interval.transpose(line: String(line)))
-                                        .fontWeight(.bold)
-                                } else {
-                                    Text(line)
-                                }
-                            }
+                VStack(alignment: .leading) {
+                    let interval = MusicInterval(src: chord.tonality, dst: tonality)
+                    let lineList = chord.content.split(
+                        separator: /\r\n|\r|\n/,
+                        omittingEmptySubsequences: false,
+                    )
+                    ForEach(Array(lineList.enumerated()), id: \.offset) { _, line in
+                        if ChordsView.isChordLine(line: String(line)) {
+                            Text(interval.transpose(line: String(line)))
+                                .fontWeight(.bold)
                         } else {
-                            ForEach(Array(chord.content.replacingOccurrences(of: "\r\n|\r|\n", with: "\n", options: .regularExpression).components(separatedBy: "\n").enumerated()), id:\.offset) { _, line in
-                                if SongChords.isChordLine(line: line) {
-                                    Text(interval.transpose(line: line))
-                                        .fontWeight(.bold)
-                                } else {
-                                    Text(line)
-                                }
-                            }
+                            Text(line)
                         }
                     }
-                    .padding()
                 }
-                .frame(minWidth: geometry.size.width, minHeight: geometry.size.height, alignment: .topLeading)
+                .padding()
+                .frame(
+                    minWidth: geometry.size.width,
+                    minHeight: geometry.size.height,
+                    alignment: .topLeading,
+                )
             }
         }
         .font(.system(size: 16.0 * zoom, design: .monospaced))
@@ -250,7 +330,7 @@ private struct SongChords: View {
 }
 
 
-private struct SongToolbar: ToolbarContent {
+private struct MainToolbar: ToolbarContent {
     let song: Song
     let defaultTonality: MusicNote
     let hiddenTonalities: Set<MusicNote>
@@ -281,28 +361,11 @@ private struct SongToolbar: ToolbarContent {
             }
         }
         ToolbarItemGroup(placement: .bottomBar) {
-            if #available(iOS 16.0, *) {
-                Menu(content: {
-                    Picker("TonalitySelect", selection: $tonality) {
-                        ForEach(tonalityMenuList(), id: \.self) { tonality in
-                            Text(tonalityMenuItem(tonality: tonality))
-                        }
-                    }
-                }, label: {
-                    Label(tonalityMenuText(), systemImage: "chevron.up.chevron.down").labelStyle(.titleAndIcon)
-                })
-                .menuStyle(.button)
-                .menuOrder(.fixed)
-                .buttonStyle(.bordered)
-            } else {
-                Menu(tonalityMenuText()) {
-                    Picker("TonalitySelect", selection: $tonality) {
-                        ForEach(tonalityMenuList().reversed(), id: \.self) { tonality in
-                            Text(tonalityMenuItem(tonality: tonality))
-                        }
-                    }
-                }
-            }
+            TonalityMenu(
+                defaultTonality: defaultTonality,
+                hiddenTonalities: hiddenTonalities,
+                tonality: $tonality,
+            )
             Spacer()
             Button("FontSizeDecrease", systemImage: "textformat.size.smaller", action: {
                 zoom *= pow(2.0, -0.1)
@@ -312,89 +375,115 @@ private struct SongToolbar: ToolbarContent {
                 zoom *= pow(2.0, +0.1)
             })
             .disabled(zoom >= pow(2.0, +2.0))
-            if #available(iOS 16.0, *) {
-                Menu("SongOptions", systemImage: "ellipsis.circle", content: optionsMenuContent)
-                    .menuOrder(.fixed)
-            } else {
-                Menu("SongOptions", systemImage: "ellipsis.circle", content: optionsMenuContent)
-            }
+            OptionsMenu(
+                song: song,
+                defaultTonality: defaultTonality,
+                tonality: $tonality,
+                zoom: $zoom,
+                infoVisible: $infoVisible,
+            )
         }
-    }
-    
-    private func tonalityMenuText() -> String {
-        var text: String = String(localized: "TonalitySelect")
-        if tonality != nil {
-            text += ": " + tonality!.notation
-        }
-        return text
-    }
-    
-    private func tonalityMenuList() -> Array<MusicNote?> {
-        var tonalities: Array<MusicNote?> = MusicNote.TONALITIES.filter { tonality in
-            !hiddenTonalities.contains(tonality)
-        }
-        tonalities.insert(nil, at: 0)
-        return tonalities
-    }
-    
-    private func tonalityMenuItem(tonality: MusicNote?) -> String {
-        guard let tonality else { return String(localized: "TonalityNull") }
-        var text: String = tonality.notation
-        if tonality == defaultTonality {
-            text += " (" + String(localized: "TonalityDefault") + ")"
-        }
-        return text
-    }
-    
-    @ViewBuilder
-    private func optionsMenuContent() -> some View {
-        Button("Information", systemImage: "info.circle", action: {
-            infoVisible = true
-        })
-        if let url = URL(string: song.permalink) {
-            Link(destination: url, label: {
-                Label("OpenInBrowser", systemImage: "link")
-            })
-            if #available(iOS 16.0, *) {
-                ShareLink("Share", item: url)
-            }
-        }
-        Button("TonalityHide", systemImage: "note.text", action: {
-            tonality = nil
-        })
-        .disabled(tonality == nil)
-        Button("TonalityReset", systemImage: "music.note.list", action: {
-            tonality = defaultTonality
-        })
-        .disabled(tonality == defaultTonality)
-        Button("FontSizeReset", systemImage: "textformat.size", action: {
-            zoom = pow(2.0, 0.0)
-        })
-        .disabled(zoom == pow(2.0, 0.0))
     }
 }
 
 
-#Preview {
-    if #available(iOS 16.0, *) {
-        NavigationStack {
-            SongMain(
-                song: Demo.song,
-                songMeta: .constant(Demo.songMeta),
-                chord: Demo.chord,
-                chordMeta: .constant(Demo.chordMeta),
-                hiddenTonalities: MusicNote.ENHARMONIC_TONALITIES,
-            )
-        }
-    } else {
-        NavigationView {
-            SongMain(
-                song: Demo.song,
-                songMeta: .constant(Demo.songMeta),
-                chord: Demo.chord,
-                chordMeta: .constant(Demo.chordMeta),
-                hiddenTonalities: MusicNote.ENHARMONIC_TONALITIES,
-            )
-        }
+private struct TonalityMenu: View {
+    let defaultTonality: MusicNote
+    let hiddenTonalities: Set<MusicNote>
+    @Binding var tonality: MusicNote?
+    
+    var body: some View {
+        Menu(content: {
+            Picker(selection: $tonality, content: {
+                var tonalityList: [MusicNote?] = MusicNote.TONALITIES.filter({ tonality in
+                    !hiddenTonalities.contains(tonality)
+                })
+                let _ = tonalityList.insert(nil, at: 0)
+                ForEach(tonalityList, id: \.self) { tonality in
+                    let text = tonality.map({ tonality in
+                        let text = tonality.notation
+                        if tonality == defaultTonality {
+                            return text.appending(" (" + String(localized: "TonalityDefault") + ")")
+                        }
+                        return text
+                    }) ?? String(localized: "TonalityNull")
+                    Text(text)
+                }
+            }, label: {
+                EmptyView()
+            })
+        }, label: {
+            let text = String(localized: "TonalitySelect")
+                .appending(tonality.map({ tonality in
+                    ": " + tonality.notation
+                }) ?? "")
+            Label(text, systemImage: "chevron.up.chevron.down")
+                .labelStyle(.titleAndIcon)
+        })
+        .menuStyle(.button)
+        .menuOrder(.fixed)
+        .buttonStyle(.bordered)
+    }
+}
+
+
+private struct OptionsMenu: View {
+    let song: Song
+    let defaultTonality: MusicNote
+    @Binding var tonality: MusicNote?
+    @Binding var zoom: Double
+    @Binding var infoVisible: Bool
+    
+    var body: some View {
+        Menu("Options", systemImage: "ellipsis.circle", content: {
+            Button("Information", systemImage: "info.circle", action: {
+                infoVisible = true
+            })
+            if let url = URL(string: song.permalink) {
+                Link(destination: url, label: {
+                    Label("OpenInBrowser", systemImage: "link")
+                })
+                ShareLink("Share", item: url)
+            }
+            Button("TonalityHide", systemImage: "note.text", action: {
+                tonality = nil
+            })
+            .disabled(tonality == nil)
+            Button("TonalityReset", systemImage: "music.note.list", action: {
+                tonality = defaultTonality
+            })
+            .disabled(tonality == defaultTonality)
+            Button("FontSizeReset", systemImage: "textformat.size", action: {
+                zoom = pow(2.0, 0.0)
+            })
+            .disabled(zoom == pow(2.0, 0.0))
+        })
+        .menuOrder(.fixed)
+    }
+}
+
+
+#Preview("Lyrics") {
+    NavigationStack {
+        SongView(viewState: .ready(ReadyState(
+            song: Demo.song,
+            songMeta: Demo.songMeta,
+            chord: Demo.chord,
+            chordMeta: Demo.chordMeta,
+            hiddenTonalities: MusicNote.ENHARMONIC_TONALITIES,
+        )))
+    }
+}
+
+
+#Preview("Chords") {
+    NavigationStack {
+        SongView(viewState: .ready(ReadyState(
+            song: Demo.song,
+            songMeta: Demo.songMeta.copyWithStarred(starred: true),
+            chord: Demo.chord,
+            chordMeta: Demo.chordMeta.copyWithTonality(tonality: Demo.chord.tonality),
+            hiddenTonalities: MusicNote.ENHARMONIC_TONALITIES,
+        )))
     }
 }

@@ -14,7 +14,7 @@ enum MusicAlter: CaseIterable {
     case DOUBLE_SHARP
     
     var symbol: String {
-        return switch self {
+        switch self {
         case .DOUBLE_FLAT: "bb"
         case .FLAT: "b"
         case .NATURAL: ""
@@ -24,7 +24,7 @@ enum MusicAlter: CaseIterable {
     }
     
     var semitones: Int {
-        return switch self {
+        switch self {
         case .DOUBLE_FLAT: -2
         case .FLAT: -1
         case .NATURAL: 0
@@ -44,10 +44,10 @@ enum MusicAlter: CaseIterable {
     ))
     
     static func getBySymbol(symbol: String) -> MusicAlter? {
-        return symbol2alter[symbol]
+        symbol2alter[symbol]
     }
     
     static func getBySemitones(semitones: Int) -> MusicAlter? {
-        return semitones2alter[semitones]
+        semitones2alter[semitones]
     }
 }

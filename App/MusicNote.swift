@@ -11,7 +11,7 @@ class MusicNote: Identifiable, Hashable, Decodable, Encodable {
     let alter: MusicAlter
     
     static func == (lhs: MusicNote, rhs: MusicNote) -> Bool {
-        return lhs.step == rhs.step && lhs.alter == rhs.alter
+        lhs.step == rhs.step && lhs.alter == rhs.alter
     }
     
     func hash(into hasher: inout Hasher) {
@@ -25,7 +25,7 @@ class MusicNote: Identifiable, Hashable, Decodable, Encodable {
     }
     
     var notation: String {
-        return "\(step.name)\(alter.symbol)"
+        "\(step.name)\(alter.symbol)"
     }
     
     convenience init?(notation: String) {

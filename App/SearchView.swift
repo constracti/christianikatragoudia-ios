@@ -9,127 +9,128 @@ import SwiftUI
 
 
 struct SearchView: View {
-
-    var body: some View {
-        if #available(iOS 16.0, *) {
-            NavigationStack {
-                MainView(isPreview: false)
-            }
-        } else {
-            NavigationView {
-                MainView(isPreview: false)
-            }
-        }
+    @State private var state: SearchState?
+    private let isPreview: Bool
+    
+    init() {
+        self.state = nil
+        self.isPreview = false
     }
-}
-
-
-private struct MainView: View {
-    let isPreview: Bool
     
-    @State private var state: SearchState = SearchState()
-    
-    private let timer = Timer.publish(every: 3600, on: .main, in: .common).autoconnect()
+    fileprivate init(state: SearchState?) {
+        self.state = state
+        self.isPreview = true
+    }
     
     var body: some View {
         ZStack {
             BackgroundView()
-            if state.resultList == nil {
+            if state == nil {
                 ProgressView()
+                    .task {
+                        if isPreview { return }
+                        let db = TheDatabase()
+                        state = SearchState(
+                            db: db,
+                            query: "",
+                            updateCheck: SearchState.cachedUpdateCheck(db: db),
+                        )
+                    }
             } else {
-                if #available(iOS 16.0, *) {
-                    List {
-                        MainView.listContent(query: state.query, resultList: state.resultList!, updateCheck: state.updateCheck ?? false)
+                List {
+                    if state!.query.isEmpty {
+                        DestinationsSection(
+                            updateCheck: state!.updateCheck,
+                            isPreview: isPreview,
+                        )
                     }
-                    .scrollContentBackground(.hidden)
-                    .searchable(text: $state.bindQuery(), prompt: "Search")
-                } else {
-                    List {
-                        MainView.listContent(query: state.query, resultList: state.resultList!, updateCheck: state.updateCheck ?? false)
+                    Section("Results") {
+                        ForEach(state!.resultList) { result in
+                            ResultRow(result: result, isPreview: isPreview)
+                        }
                     }
-                    .listStyle(.plain)
-                    .searchable(text: $state.bindQuery(), prompt: "Search")
+                }
+                .scrollContentBackground(.hidden)
+                .searchable(text: $state.bindQuery(isPreview: isPreview), prompt: "Search")
+                .task {
+                    if isPreview { return }
+                    let db = TheDatabase()
+                    let updateCheck = SearchState.cachedUpdateCheck(db: db)
+                    state = SearchState(
+                        db: db,
+                        query: state!.query,
+                        updateCheck: updateCheck,
+                    )
+                    if updateCheck { return }
+                    if await !SearchState.serverUpdateCheck(db: db) { return }
+                    Config.setUpdateCheck(db: db, value: true)
+                    state = state!.copyWithUpdateCheck(updateCheck: true)
                 }
             }
         }
         .navigationTitle("AppName")
         .toolbar {
-            HomeToolbarContent()
-        }
-        .onReceive(timer) { _ in
-            Task {
-                let db = TheDatabase()
-                if state.updateCheck ?? SearchState.cachedUpdateCheck(db: db) {
-                    return
-                }
-                if await SearchState.serverUpdateCheck(db: db) {
-                    Config.setUpdateCheck(db: db, value: true)
-                    state = state.copyWithUpdateCheck(updateCheck: true)
-                }
-            }
-        }
-        .onAppear {
-            guard !isPreview else {
-                state = state.copyWithResultList(resultList: Demo.resultList).copyWithUpdateCheck(updateCheck: true)
-                return
-            }
-            Task {
-                let db = TheDatabase()
-                state = await state
-                    .copyWithResultList(resultList: SearchState.getResultList(db: db, query: state.query))
-                    .copyWithUpdateCheck(updateCheck: SearchState.cachedUpdateCheck(db: db))
-            }
+            HomeToolbarContent(isPreview: isPreview)
         }
         .analyticsScreen(name: String(localized: "Search"), class: "/search/")
     }
+}
 
-    @ViewBuilder
-    private static func listContent(query: String, resultList: [SongTitle], updateCheck: Bool) -> some View {
-        if query.isEmpty {
-            Section("Destinations") {
-                NavigationLink(destination: {
+
+private struct DestinationsSection: View {
+    let updateCheck: Bool
+    let isPreview: Bool
+    
+    var body: some View {
+        Section("Destinations") {
+            NavigationLink(destination: {
+                if isPreview {
+                    EmptyView()
+                } else {
                     StarredView()
-                }, label: {
-                    Label("Starred", systemImage: "star")
-                })
-                NavigationLink(destination: {
-                    RecentView()
-                }, label: {
-                    Label("Recent", systemImage: "clock.arrow.trianglehead.counterclockwise.rotate.90")
-                })
-                if updateCheck {
-                    NavigationLink(destination: {
-                        UpdateView()
-                    }, label: {
-                        HStack {
-                            Label("Update", systemImage: "arrow.trianglehead.2.clockwise.rotate.90")
-                            Spacer()
-                            Image(systemName: "smallcircle.filled.circle.fill")
-                                .foregroundStyle(.badge)
-                        }
-                    })
                 }
+            }, label: {
+                Label("Starred", systemImage: "star")
+            })
+            // TODO system image availability
+            NavigationLink(destination: {
+                if isPreview {
+                    EmptyView()
+                } else {
+                    RecentView()
+                }
+            }, label: {
+                Label("Recent", systemImage: "clock.arrow.trianglehead.counterclockwise.rotate.90")
+            })
+            if updateCheck {
+                NavigationLink(destination: {
+                    if isPreview {
+                        EmptyView()
+                    } else {
+                        UpdateView()
+                    }
+                }, label: {
+                    HStack {
+                        Label("Update", systemImage: "arrow.trianglehead.2.clockwise.rotate.90")
+                        Spacer()
+                        Image(systemName: "smallcircle.filled.circle.fill")
+                            .foregroundStyle(.badge)
+                    }
+                })
             }
-            .labelStyle(.titleAndIcon)
-            .listRowBackground(ListBackground())
         }
-        Section("Results") {
-            ForEach(resultList) { result in
-                ResultRow(result: result)
-            }
-        }
+        .labelStyle(.titleAndIcon)
+        .listRowBackground(ListBackground())
     }
 }
 
 
 #Preview {
-    if #available(iOS 16.0, *) {
-        NavigationStack {
-            MainView(isPreview: true)
-        }
-    } else {
-        NavigationView {
-            MainView(isPreview: true)
-        }
+    NavigationStack {
+        SearchView(state: SearchState(
+            query: "",
+            resultList: Demo.resultList,
+            updateCheck: true,
+        ))
     }
 }

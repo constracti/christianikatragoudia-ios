@@ -10,36 +10,38 @@ import SQLite3
 
 
 // TODO make database operations async
+
 class TheDatabase {
     
     static private let version: Int = 1
     
     static private var initialized: Bool = false
 
-    // https://www.kodeco.com/6620276-sqlite-with-swift-tutorial-getting-started/
     private var db: OpaquePointer!
 
     init() {
         open()
         if !TheDatabase.initialized {
+            beginTransaction()
             Config.create(db: self)
-            let version: Int? = Config.getVersion(db: self)
-            if version == nil {
-                Config.setVersion(db: self, value: TheDatabase.version)
+            if let version = Config.getVersion(db: self) {
+                precondition(version == TheDatabase.version)
             } else {
-                assert(version == TheDatabase.version)
+                Config.setVersion(db: self, value: TheDatabase.version)
             }
             Song.create(db: self)
             SongFts.create(db: self)
             SongMeta.create(db: self)
             Chord.create(db: self)
             ChordMeta.create(db: self)
+            commitTransaction()
             TheDatabase.initialized = true
         }
     }
     
     func reinit() {
         TheDatabase.initialized = false
+        beginTransaction()
         ChordMeta.drop(db: self)
         Chord.drop(db: self)
         SongMeta.drop(db: self)
@@ -53,21 +55,32 @@ class TheDatabase {
         SongMeta.create(db: self)
         Chord.create(db: self)
         ChordMeta.create(db: self)
+        commitTransaction()
         TheDatabase.initialized = true
     }
 
     private func open() {
         let url = try! FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true).appendingPathComponent("db_main.sqlite")
-        assert(sqlite3_open(url.path, &db) == SQLITE_OK)
+        precondition(sqlite3_open(NSString(string: url.path()).utf8String!, &db) == SQLITE_OK)
     }
 
     func get() -> OpaquePointer! {
-        return db
+        db
     }
 
     deinit {
-        if (db != nil) {
-            assert(sqlite3_close(db) == SQLITE_OK)
-        }
+        precondition(sqlite3_close(db) == SQLITE_OK)
+    }
+    
+    func beginTransaction() {
+        let sql = "BEGIN TRANSACTION"
+        let stmt = Statement(db: self, sql: sql)
+        stmt.stepDone()
+    }
+    
+    func commitTransaction() {
+        let sql = "COMMIT TRANSACTION"
+        let stmt = Statement(db: self, sql: sql)
+        stmt.stepDone()
     }
 }

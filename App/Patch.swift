@@ -29,24 +29,15 @@ class Patch: Decodable {
         case chordIdSet = "chord_id_list"
         case songList = "song_list"
         case chordList = "chord_list"
-        
     }
 
     static func get(after: Int?, full: Bool) async -> Patch? {
-        let queryItems = [
-            URLQueryItem(name: "action", value: "xt_app_patch_2"),
-            URLQueryItem(name: "after", value: after != nil ? String(after!) : nil),
-            URLQueryItem(name: "full", value: String(full)),
-        ]
-        let url: URL
-        if #available(iOS 16.0, *) {
-            url = WebApp.ajaxUrl.appending(queryItems: queryItems)
-        } else {
-            var urlComp = URLComponents(string: WebApp.ajaxUrl.absoluteString)!
-            urlComp.queryItems = queryItems
-            url = urlComp.url!
-        }
         do {
+            let url = WebApp.ajaxUrl.appending(queryItems: [
+                URLQueryItem(name: "action", value: "xt_app_patch_2"),
+                URLQueryItem(name: "after", value: after != nil ? String(after!) : nil),
+                URLQueryItem(name: "full", value: String(full)),
+            ])
             let tuple = try await URLSession.shared.data(from: url)
             let (data, response) = (tuple.0, tuple.1 as! HTTPURLResponse)
             if response.statusCode != 200 {

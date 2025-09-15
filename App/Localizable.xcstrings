@@ -21,7 +21,7 @@
       "localizations" : {
         "el" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Χριστιανικά Τραγούδια"
           }
         },
@@ -146,7 +146,6 @@
       }
     },
     "Download" : {
-      "extractionState" : "manual",
       "localizations" : {
         "el" : {
           "stringUnit" : {
@@ -198,7 +197,7 @@
       "localizations" : {
         "el" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Παρουσιάστηκε κάποιο σφάλμα. Έλεγξε ότι έχεις συνδεθεί στο διαδίκτυο."
           }
         },
@@ -211,11 +210,10 @@
       }
     },
     "DownloadPrompt" : {
-      "extractionState" : "manual",
       "localizations" : {
         "el" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Λήψη των στίχων\nκαι των συγχορδιών\nόλων των τραγουδιών\nαπό την ιστοσελίδα"
           }
         },
@@ -231,7 +229,7 @@
       "localizations" : {
         "el" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Όλες οι προσθήκες και οι αλλαγές\nστους στίχους και τις συγχορδίες\nτων τραγουδιών της ιστοσελίδας\nέχουν ενσωματωθεί στην εφαρμογή."
           }
         },
@@ -263,7 +261,7 @@
       "localizations" : {
         "el" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Μείωση μεγέθους γραμματοσειράς"
           }
         },
@@ -279,7 +277,7 @@
       "localizations" : {
         "el" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Αύξηση μεγέθους γραμματοσειράς"
           }
         },
@@ -295,7 +293,7 @@
       "localizations" : {
         "el" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Επαναφορά μεγέθους γραμματοσειράς"
           }
         },
@@ -327,7 +325,7 @@
       "localizations" : {
         "el" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Αν θέλεις να συνεισφέρεις με υλικό, να καταθέσεις προτάσεις βελτίωσης της ιστοσελίδας ή της εφαρμογής, καθώς και για επισημάνσεις λαθών, θα χαρώ να επικοινωνήσεις μαζί μου."
           }
         },
@@ -343,7 +341,7 @@
       "localizations" : {
         "el" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Η παρούσα εφαρμογή συγκεντρώνει στη συσκευή σου στίχους και συγχορδίες ορθόδοξων χριστιανικών τραγουδιών που αγαπήσαμε στα κατηχητικά και τις κατασκηνώσεις."
           }
         },
@@ -359,7 +357,7 @@
       "localizations" : {
         "el" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Κωνσταντίνος Ρακτιβάν"
           }
         },
@@ -375,7 +373,7 @@
       "localizations" : {
         "el" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Περισσότερες πληροφορίες, παρτιτούρες pdf με την κύρια μελωδία, αρχεία mp3 και συνδέσμους προς videos με τις επίσημες ηχογραφήσεις θα βρεις στην ιστοσελίδα:"
           }
         },
@@ -391,7 +389,7 @@
       "localizations" : {
         "el" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Μπορείς να αναζητήσεις το τραγούδι που σε ενδιαφέρει, να προβάλεις τους στίχους του και να επιλέξεις την τονικότητα των συγχορδιών του, χωρίς να απαιτείται σύνδεση στο διαδίκτυο."
           }
         },
@@ -451,50 +449,18 @@
         }
       }
     },
-    "LicenseAttributionContent" : {
+    "LicenseContent" : {
       "localizations" : {
         "el" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Θα πρέπει να καταχωρήσεις αναφορά στο δημιουργό, με επισήμανση αν έχουν γίνει αλλαγές."
+            "state" : "translated",
+            "value" : "Μπορείς να μοιραστείς και να προσαρμόσεις το υλικό υπό τους ακόλουθους όρους:\n\n**Αναφορά δημιουργού**\nΘα πρέπει να καταχωρήσεις αναφορά στο δημιουργό, με επισήμανση αν έχουν γίνει αλλαγές.\n\n**Μη εμπορική χρήση**\nΔεν μπορείς να χρησιμοποιήσεις το υλικό για εμπορικούς σκοπούς.\n\n**Παρόμοια διανομή**\nΕπιτρέπεται να διανείμεις τις δικές σου συνεισφορές, αλλά με την ίδια άδεια."
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "You should reference the author, indicating whether changes have been made."
-          }
-        }
-      }
-    },
-    "LicenseAttributionTitle" : {
-      "localizations" : {
-        "el" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Αναφορά δημιουργού"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Attribution"
-          }
-        }
-      }
-    },
-    "LicenseIntroduction" : {
-      "localizations" : {
-        "el" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Μπορείς να μοιραστείς και να προσαρμόσεις το υλικό υπό τους ακόλουθους όρους:"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "You may share and and adapt the material under the following conditions:"
+            "value" : "You may share and and adapt the material under the following conditions:\n\n**Attribution**\nYou should reference the author, indicating whether changes have been made.\n\n**Non commercial use**\nYou may not use the material for commercial purposes.\n\n**Share alike**\nYou are allowed to distribute your own contributions, but under the same license."
           }
         }
       }
@@ -511,70 +477,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Attribution - Non commercial - Share alike 4.0"
-          }
-        }
-      }
-    },
-    "LicenseNonCommercialContent" : {
-      "localizations" : {
-        "el" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Δεν μπορείς να χρησιμοποιήσεις το υλικό για εμπορικούς σκοπούς."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "You may not use the material for commercial purposes."
-          }
-        }
-      }
-    },
-    "LicenseNonCommercialTitle" : {
-      "localizations" : {
-        "el" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Μη εμπορική χρήση"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Non commercial use"
-          }
-        }
-      }
-    },
-    "LicenseShareAlikeContent" : {
-      "localizations" : {
-        "el" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Επιτρέπεται να διανείμεις τις δικές σου συνεισφορές, αλλά με την ίδια άδεια."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "You are allowed to distribute your own contributions, but under the same license."
-          }
-        }
-      }
-    },
-    "LicenseShareAlikeTitle" : {
-      "localizations" : {
-        "el" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Παρόμοια διανομή"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Share alike"
           }
         }
       }
@@ -599,7 +501,7 @@
       "localizations" : {
         "el" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "https://creativecommons.org/licenses/by-nc-sa/4.0/deed.el"
           }
         },
@@ -803,22 +705,6 @@
         }
       }
     },
-    "SongOptions" : {
-      "localizations" : {
-        "el" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Επιλογές τραγουδιού"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Song options"
-          }
-        }
-      }
-    },
     "Starred" : {
       "localizations" : {
         "el" : {
@@ -887,7 +773,7 @@
       "localizations" : {
         "el" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Απόκρυψη συγχορδιών"
           }
         },
@@ -919,7 +805,7 @@
       "localizations" : {
         "el" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Επιλογή αρχικής τονικότητας"
           }
         },
@@ -1016,13 +902,13 @@
         "el" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Λήψη τραγουδιών κατά την εκκίνηση της εφαρμογής\nΑναζήτηση τραγουδιών\nΤαξινόμηση αποτελεσμάτων αναζήτησης κατά συνάφεια\nΕπιλογή τονικότητας συγχορδιών ανά τραγούδι\nΟρισμός μεγέθους γραμματοσειράς στίχων και συγχορδιών\nΕμφάνιση συντελεστών τραγουδιού\nΣήμανση τραγουδιού ως αγαπημένου\nΕμφάνιση προσφάτως προβεβλημένων τραγουδιών\nΣυγχρονισμός με την ιστοσελίδα\nΕπαναφορά επιλογών χρήστη\nΠροβολή πληροφοριών, άδειας χρήσης και έκδοσης"
+            "value" : "Λήψη τραγουδιών κατά την εκκίνηση της εφαρμογής\nΑναζήτηση τραγουδιών\nΤαξινόμηση αποτελεσμάτων αναζήτησης κατά συνάφεια\nΕπιλογή τονικότητας συγχορδιών ανά τραγούδι\nΟρισμός μεγέθους γραμματοσειράς στίχων και συγχορδιών\nΕμφάνιση συντελεστών τραγουδιού\nΣήμανση τραγουδιού ως αγαπημένου\nΕμφάνιση προσφάτως προβεβλημένων τραγουδιών\nΈλεγχος και λήψη νέων τραγουδιών\nΕπαναφορά επιλογών χρήστη\nΠροβολή πληροφοριών, άδειας χρήσης και έκδοσης"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Download songs on app startup\nSearch songs\nSort search results by relevance\nSelect chord tonality per song\nSet lyrics and chords font size\nShow song creators\nMark songs as starred\nList recently viewed songs\nSync with website\nReset user options\nDisplay information, license and version"
+            "value" : "Download songs on app startup\nSearch songs\nSort search results by relevance\nSelect chord tonality per song\nSet lyrics and chords font size\nShow song creators\nMark songs as starred\nList recently viewed songs\nCheck for and download new songs\nReset user options\nDisplay information, license and version"
           }
         }
       }

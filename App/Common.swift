@@ -9,11 +9,16 @@ import SwiftUI
 
 
 struct HomeToolbarContent: ToolbarContent {
+    let isPreview: Bool
     
     var body: some ToolbarContent {
         ToolbarItemGroup(placement: .topBarTrailing) {
             NavigationLink(destination: {
-                OptionsView()
+                if isPreview {
+                    EmptyView()
+                } else {
+                    OptionsView()
+                }
             }, label: {
                 Label("Options", systemImage: "gearshape")
             })
@@ -24,10 +29,15 @@ struct HomeToolbarContent: ToolbarContent {
 
 struct ResultRow: View {
     let result: SongTitle
+    let isPreview: Bool
     
     var body: some View {
         NavigationLink {
-            SongView(id: result.id)
+            if isPreview {
+                EmptyView()
+            } else {
+                SongView(id: result.id)
+            }
         } label: {
             VStack(alignment: .leading) {
                 Text(result.title)

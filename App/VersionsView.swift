@@ -24,13 +24,21 @@ struct VersionsView: View {
                             Text(version.date)
                                 .font(.caption)
                         }
-                        Spacer(minLength: 8.0)
-                        let x = version.changes.components(separatedBy: "\n")
-                        ForEach(x, id: \.self) { change in
-                            Text("- " + change)
-                            Spacer(minLength: 8.0)
+                        Spacer(minLength: 8)
+                        let markdown = version.changes.split(separator: /\n/).map({ entry in
+                            "- " + entry
+                        }).joined(separator: "\n")
+                        if let rich = try? AttributedString(
+                            markdown: markdown,
+                            options: AttributedString.MarkdownParsingOptions(
+                                interpretedSyntax: .inlineOnly,
+                            ),
+                        ) {
+                            Text(rich)
+                        } else {
+                            Text(markdown)
                         }
-                        Spacer(minLength: 24.0)
+                        Spacer(minLength: 24)
                     }
                 }
             }
@@ -43,13 +51,7 @@ struct VersionsView: View {
 
 
 #Preview {
-    if #available(iOS 16.0, *) {
-        NavigationStack {
-            VersionsView()
-        }
-    } else {
-        NavigationView {
-            VersionsView()
-        }
+    NavigationStack {
+        VersionsView()
     }
 }

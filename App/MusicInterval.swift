@@ -42,44 +42,21 @@ class MusicInterval {
     }
     
     func transpose(line: String) -> String {
-        if #available(iOS 16.0, *) {
-            let acc = line.matches(of: /[A-G](?:bb?|#|x)?/).reduce(("", line.startIndex), { acc, match in
-                let block = line[acc.1..<match.startIndex].replacing(/\s{2,}/, with: " ")
-                let spaceCount = line.distance(from: line.startIndex, to: match.startIndex) - acc.0.count - block.count
-                let space: String
-                if block.last == "/" || spaceCount < 0 {
-                    space = ""
-                } else {
-                    space = String(repeating: " ", count: spaceCount)
-                }
-                let srcNotation = String(line[match.range])
-                let srcTonality = MusicNote(notation: srcNotation)!
-                let dstTonality = transpose(tonality: srcTonality)
-                let dstNotation = dstTonality?.notation ?? MusicNote.NOTATION_ERROR
-                return (acc.0 + block + space + dstNotation, match.endIndex)
-            })
-            return String(acc.0) + line[acc.1...]
-        } else {
-            var acc = ("", line.startIndex)
-            while true {
-                guard let range = line.range(of: "[A-G](?:bb?|#|x)?", options: .regularExpression, range: acc.1..<line.endIndex) else {
-                    break
-                }
-                let block = line[acc.1..<range.lowerBound].replacingOccurrences(of: "\\s{2,}", with: " ", options: .regularExpression)
-                let spaceCount = line.distance(from: line.startIndex, to: range.lowerBound) - acc.0.count - block.count
-                let space: String
-                if block.last == "/" || spaceCount < 0 {
-                    space = ""
-                } else {
-                    space = String(repeating: " ", count: spaceCount)
-                }
-                let srcNotation = String(line[range])
-                let srcTonality = MusicNote(notation: srcNotation)!
-                let dstTonality = transpose(tonality: srcTonality)
-                let dstNotation = dstTonality?.notation ?? MusicNote.NOTATION_ERROR
-                acc = (acc.0 + block + space + dstNotation, range.upperBound)
+        let acc = line.matches(of: /[A-G](?:bb?|#|x)?/).reduce(("", line.startIndex), { acc, match in
+            let block = line[acc.1..<match.startIndex].replacing(/\s{2,}/, with: " ")
+            let spaceCount = line.distance(from: line.startIndex, to: match.startIndex) - acc.0.count - block.count
+            let space: String
+            if block.last == "/" || spaceCount < 0 {
+                space = ""
+            } else {
+                space = String(repeating: " ", count: spaceCount)
             }
-            return acc.0 + line[acc.1...]
-        }
+            let srcNotation = String(line[match.range])
+            let srcTonality = MusicNote(notation: srcNotation)!
+            let dstTonality = transpose(tonality: srcTonality)
+            let dstNotation = dstTonality?.notation ?? MusicNote.NOTATION_ERROR
+            return (acc.0 + block + space + dstNotation, match.endIndex)
+        })
+        return String(acc.0) + line[acc.1...]
     }
 }
