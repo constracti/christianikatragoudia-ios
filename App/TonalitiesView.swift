@@ -12,6 +12,8 @@ struct TonalitiesView: View {
     @State private var hiddenTonalities: Set<MusicNote>?
     private let isPreview: Bool
     
+    @ScaledMetric private var spacing: Double = smallMargin
+    
     init() {
         self.hiddenTonalities = nil
         self.isPreview = false
@@ -33,9 +35,8 @@ struct TonalitiesView: View {
                     }
             } else {
                 ScrollView {
-                    VStack(alignment: .leading, spacing: 0) {
+                    VStack(alignment: .leading, spacing: spacing) {
                         Text("TonalitiesDescription")
-                            .padding(8)
                         let tonalitiesByStep: [[MusicNote]] = MusicNote.TONALITIES.reduce(into: ([[MusicNote]](), [MusicNote]()), { acc, tonality in
                             acc.1.append(tonality)
                             if acc.1.count == 3 {
@@ -44,7 +45,7 @@ struct TonalitiesView: View {
                             }
                         }).0
                         ForEach(Array(tonalitiesByStep.enumerated()), id: \.offset) { _, row in
-                            HStack(spacing: 0) {
+                            HStack(spacing: spacing) {
                                 ForEach(row) { tonality in
                                     Toggle(tonality.notation, isOn: Binding(
                                         get: {
@@ -61,17 +62,12 @@ struct TonalitiesView: View {
                                         },
                                     ))
                                     .tint(.accent)
-                                    .padding(8)
-                                    .overlay(
-                                        RoundedRectangle(cornerRadius: 8)
-                                            .stroke(Color(UIColor.systemFill)),
-                                    )
-                                    .padding(8)
+                                    .modifier(ThemeEntryModifier(isSquare: true))
                                 }
                             }
                         }
                     }
-                    .padding(8)
+                    .padding(outerPadding)
                 }
             }
         }

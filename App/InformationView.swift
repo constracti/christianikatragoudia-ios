@@ -34,10 +34,10 @@ struct InformationView: View {
                     ),
                 ) {
                     Text(rich)
-                        .padding()
+                        .padding(outerPadding)
                 } else {
                     Text(markdown)
-                        .padding()
+                        .padding(outerPadding)
                 }
             }
         }

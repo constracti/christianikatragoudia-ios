@@ -10,21 +10,22 @@ import SwiftUI
 
 struct VersionsView: View {
     
+    @ScaledMetric private var spacing: Double = smallMargin
+    
     var body: some View {
         ZStack {
             BackgroundView()
             ScrollView {
-                LazyVStack(alignment: .leading) {
+                LazyVStack(alignment: .leading, spacing: spacing) {
                     ForEach(Version.ALL.reversed(), id: \.tag) { version in
                         HStack {
                             Text(String(localized: "Version") + " " + version.tag)
-                                .font(.body.bold())
+                                .fontWeight(.bold)
                                 .foregroundStyle(.accent)
                             Spacer()
                             Text(version.date)
                                 .font(.caption)
                         }
-                        Spacer(minLength: 8)
                         let markdown = version.changes.split(separator: /\n/).map({ entry in
                             "- " + entry
                         }).joined(separator: "\n")
@@ -38,11 +39,10 @@ struct VersionsView: View {
                         } else {
                             Text(markdown)
                         }
-                        Spacer(minLength: 24)
                     }
                 }
+                .padding(outerPadding)
             }
-            .padding()
         }
         .navigationTitle("VersionHistory")
         .analyticsScreen(name: String(localized: "VersionHistory"), class: "/versions/")

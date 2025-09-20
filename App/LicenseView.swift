@@ -10,11 +10,13 @@ import SwiftUI
 
 struct LicenseView: View {
     
+    @ScaledMetric private var spacing: Double = smallMargin
+    
     var body: some View {
         ZStack {
             BackgroundView()
             ScrollView {
-                VStack(alignment: .leading, spacing: 24.0) {
+                VStack(alignment: .leading, spacing: spacing) {
                     Text("LicenseLong")
                     Image("license")
                     Divider()
@@ -30,7 +32,7 @@ struct LicenseView: View {
                         Text(markdown)
                     }
                 }
-                .padding()
+                .padding(outerPadding)
             }
         }
         .navigationTitle("License")

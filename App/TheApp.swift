@@ -8,7 +8,7 @@
 import SwiftUI
 
 
-// TODO use @ScaledMetric for spacing
+// TODO make isPreview public
 
 @main
 struct TheApp: App {

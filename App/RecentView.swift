@@ -8,11 +8,19 @@
 import SwiftUI
 
 
-// TODO empty content
-
 struct RecentView: View {
     @State private var resultList: [SongTitle]?
     private let isPreview: Bool
+    
+    @ScaledMetric private var spacing: Double = smallMargin
+    
+    static var systemImage: String {
+        if #available(iOS 18, *) {
+            "clock.arrow.trianglehead.counterclockwise.rotate.90"
+        } else {
+            "clock.arrow.circlepath"
+        }
+    }
 
     init() {
         self.resultList = nil
@@ -28,17 +36,26 @@ struct RecentView: View {
         ZStack {
             BackgroundView()
             if let resultList {
-                List(resultList) { result in
-                    ResultRow(result: result, isPreview: isPreview)
+                if resultList.isEmpty {
+                    ThemeMessage("RecentEmpty", systemImage: RecentView.systemImage)
+                        .padding(outerPadding)
+                } else {
+                    ScrollView {
+                        LazyVStack(spacing: spacing) {
+                            ForEach(resultList) { result in
+                                ThemeResultButton(result: result, isPreview: isPreview)
+                            }
+                        }
+                        .padding(outerPadding)
+                    }
                 }
-                .scrollContentBackground(.hidden)
             } else {
                 ProgressView()
             }
         }
         .navigationTitle("Recent")
         .toolbar {
-            HomeToolbarContent(isPreview: isPreview)
+            MainToolbarContent(isPreview: isPreview)
         }
         .task {
             if isPreview { return }
@@ -49,8 +66,14 @@ struct RecentView: View {
 }
 
 
-#Preview {
+#Preview("Ready") {
     NavigationStack {
         RecentView(resultList: Demo.resultList)
+    }
+}
+
+#Preview("Empty") {
+    NavigationStack {
+        RecentView(resultList: [])
     }
 }

@@ -253,13 +253,17 @@ private struct MainView: View {
 private struct LyricsView: View {
     let song: Song
     let zoom: Double
+    
+    @ScaledMetric private var spacing: Double = largeMargin
+    @ScaledMetric private var fontSize: Double = bodyFontSize
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 24.0 * zoom) {
+            VStack(alignment: .leading, spacing: spacing) {
                 let paragraphList = song.content.split(
                     separator: /(?:\r\n|\r|\n){2,}/,
                 )
+                // TODO separate paragraphs in view by native newline
                 ForEach(Array(paragraphList.enumerated()), id: \.offset) { _, html in
                     if html == "<hr />" {
                         Divider()
@@ -277,9 +281,9 @@ private struct LyricsView: View {
                     }
                 }
             }
-            .padding()
             .frame(maxWidth: .infinity, alignment: .topLeading)
-            .font(.system(size: 16.0 * zoom))
+            .font(.system(size: fontSize * zoom))
+            .padding(outerPadding)
         }
     }
 }
@@ -289,11 +293,14 @@ private struct ChordsView: View {
     let chord: Chord
     let tonality: MusicNote
     let zoom: Double
-
+    
+    @ScaledMetric private var fontSize: Double = bodyFontSize
+    
     var body: some View {
         GeometryReader { geometry in
             ScrollView([.horizontal, .vertical]) {
                 VStack(alignment: .leading) {
+                    // TODO use markdown
                     let interval = MusicInterval(src: chord.tonality, dst: tonality)
                     let lineList = chord.content.split(
                         separator: /\r\n|\r|\n/,
@@ -308,15 +315,15 @@ private struct ChordsView: View {
                         }
                     }
                 }
-                .padding()
                 .frame(
                     minWidth: geometry.size.width,
                     minHeight: geometry.size.height,
                     alignment: .topLeading,
                 )
+                .padding(outerPadding)
             }
         }
-        .font(.system(size: 16.0 * zoom, design: .monospaced))
+        .font(.system(size: fontSize * zoom, design: .monospaced))
     }
     
     private static func isChordLine(line: String) -> Bool {

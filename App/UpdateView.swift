@@ -61,6 +61,14 @@ struct UpdateView: View {
     @State private var state: ViewState
     private let isPreview: Bool
     
+    static var systemImage: String {
+        if #available(iOS 18, *) {
+            "arrow.trianglehead.2.clockwise.rotate.90"
+        } else {
+            "arrow.triangle.2.circlepath"
+        }
+    }
+    
     init() {
         self.state = .check
         self.isPreview = false
@@ -83,24 +91,14 @@ struct UpdateView: View {
                     .task(applyTask)
             case .ready(let actionMap):
                 if actionMap.isEmpty {
-                    VStack {
-                        Image(systemName: "checkmark.circle")
-                            .padding()
-                        Text("DownloadSuccess")
-                            .multilineTextAlignment(.center)
-                            .padding()
-                    }
+                    ThemeMessage("DownloadSuccess", systemImage: "checkmark.circle")
+                        .padding(outerPadding)
                 } else {
                     ReadyContent(actionMap: actionMap)
                 }
             case .error:
-                VStack {
-                    Image(systemName: "multiply.circle")
-                        .padding()
-                    Text("DownloadError")
-                        .multilineTextAlignment(.center)
-                        .padding()
-                }
+                ThemeMessage("DownloadError", systemImage: "multiply.circle")
+                    .padding(outerPadding)
             }
         }
         .navigationTitle("Update")
@@ -239,30 +237,27 @@ struct UpdateView: View {
 private struct ReadyContent: View {
     let actionMap: [UpdateAction: [SongTitle]]
     
+    @ScaledMetric private var spacing: Double = smallMargin
+    
     var body: some View {
-        List {
-            ForEach(actionMap.sorted(by: { lhs, rhs in
-                lhs.key.rawValue < rhs.key.rawValue
-            }).map({ action, resultList in
-                (action, resultList.sorted())
-            }), id: \.0, content: { action, resultList in
-                let title = "\(action.title) (\(resultList.count))"
-                Section(title) {
+        let tupleList = actionMap.sorted(by: { lhs, rhs in
+            lhs.key.rawValue < rhs.key.rawValue
+        }).map({ action, resultList in
+            (action, resultList.sorted())
+        })
+        ScrollView {
+            LazyVStack(alignment: .leading, spacing: spacing) {
+                ForEach(tupleList, id: \.0) { action, resultList in
+                    let title = "\(action.title) (\(resultList.count))"
+                    Text(title)
+                        .modifier(ThemeTitleModifier())
                     ForEach(resultList) { result in
-                        VStack(alignment: .leading) {
-                            Text(result.title)
-                                .font(.headline)
-                            if (result.title != result.excerpt) {
-                                Text(result.excerpt)
-                                    .font(.subheadline)
-                            }
-                        }
+                        ThemeResultEntry(result: result)
                     }
                 }
-                .listRowBackground(ListBackground())
-            })
+            }
+            .padding(outerPadding)
         }
-        .scrollContentBackground(.hidden)
     }
 }
 

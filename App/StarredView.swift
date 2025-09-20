@@ -8,11 +8,13 @@
 import SwiftUI
 
 
-// TODO empty content
-
 struct StarredView: View {
-    @State private var resultList: [SongTitle]? = nil
+    @State private var resultList: [SongTitle]?
     private let isPreview: Bool
+    
+    @ScaledMetric private var spacing: Double = smallMargin
+    
+    static let systemImage: String = "star"
     
     init() {
         self.resultList = nil
@@ -28,17 +30,26 @@ struct StarredView: View {
         ZStack {
             BackgroundView()
             if let resultList {
-                List(resultList) { result in
-                    ResultRow(result: result, isPreview: isPreview)
+                if resultList.isEmpty {
+                    ThemeMessage("StarredEmpty", systemImage: StarredView.systemImage)
+                        .padding(outerPadding)
+                } else {
+                    ScrollView {
+                        LazyVStack(spacing: spacing) {
+                            ForEach(resultList) { result in
+                                ThemeResultButton(result: result, isPreview: isPreview)
+                            }
+                        }
+                        .padding(outerPadding)
+                    }
                 }
-                .scrollContentBackground(.hidden)
             } else {
                 ProgressView()
             }
         }
         .navigationTitle("Starred")
         .toolbar {
-            HomeToolbarContent(isPreview: isPreview)
+            MainToolbarContent(isPreview: isPreview)
         }
         .task {
             if isPreview { return }
@@ -49,8 +60,14 @@ struct StarredView: View {
 }
 
 
-#Preview {
+#Preview("Ready") {
     NavigationStack {
         StarredView(resultList: Demo.resultList)
+    }
+}
+
+#Preview("Empty") {
+    NavigationStack {
+        StarredView(resultList: [])
     }
 }

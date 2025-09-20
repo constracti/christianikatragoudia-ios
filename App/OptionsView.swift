@@ -11,6 +11,8 @@ import SwiftUI
 struct OptionsView: View {
     private let isPreview: Bool
     
+    @ScaledMetric private var spacing: Double = smallMargin
+    
     init() {
         self.isPreview = false
     }
@@ -22,12 +24,14 @@ struct OptionsView: View {
     var body: some View {
         ZStack {
             BackgroundView()
-            List {
-                SettingsSection(isPreview: isPreview)
-                ToolsSection(isPreview: isPreview)
-                AppSection()
+            ScrollView {
+                LazyVStack(alignment: .leading, spacing: spacing) {
+                    SettingsSection(isPreview: isPreview)
+                    ToolsSection(isPreview: isPreview)
+                    AppSection()
+                }
+                .padding(outerPadding)
             }
-            .scrollContentBackground(.hidden)
         }
         .navigationTitle("Options")
         .analyticsScreen(name: String(localized: "Options"), class: "/options/")
@@ -39,59 +43,65 @@ private struct SettingsSection: View {
     let isPreview: Bool
     
     var body: some View {
-        Section("Settings") {
-            NavigationLink(destination: {
-                if isPreview {
-                    EmptyView()
-                } else {
-                    TonalitiesView()
-                }
-            }, label: {
+        Text("Settings")
+            .modifier(ThemeTitleModifier())
+        NavigationLink(destination: {
+            if isPreview {
+                EmptyView()
+            } else {
+                TonalitiesView()
+            }
+        }, label: {
+            HStack {
                 VStack(alignment: .leading) {
                     Text("Tonalities")
                     Text("TonalitiesDescription")
                         .font(.caption)
                 }
-            })
-        }
-        .listRowBackground(ListBackground())
+                Spacer()
+                Image(systemName: "chevron.right")
+            }
+        })
+        .buttonStyle(ThemeButtonStyle())
     }
 }
 
 
 private struct ToolsSection: View {
     let isPreview: Bool
+    
     @State private var clearRecentVisible: Bool = false
     @State private var resetTonalityVisible: Bool = false
     @State private var resetZoomVisible: Bool = false
     
     var body: some View {
-        Section("Tools") {
-            NavigationLink(destination: {
-                if isPreview {
-                    EmptyView()
-                } else {
-                    UpdateView()
-                }
-            }, label: {
+        Text("Tools")
+            .modifier(ThemeTitleModifier())
+        NavigationLink(destination: {
+            if isPreview {
+                EmptyView()
+            } else {
+                UpdateView()
+            }
+        }, label: {
+            HStack {
                 VStack(alignment: .leading) {
                     Text("Update")
                     Text("UpdateDescription")
                         .font(.caption)
                 }
-            })
-            Button("ClearRecent", action: {
-                clearRecentVisible = true
-            })
-            Button("ResetTonality", action: {
-                resetTonalityVisible = true
-            })
-            Button("ResetZoom", action: {
-                resetZoomVisible = true
-            })
-        }
-        .listRowBackground(ListBackground())
-        .buttonStyle(.plain)
+                Spacer()
+                Image(systemName: "chevron.right")
+            }
+        })
+        .buttonStyle(ThemeButtonStyle())
+        Button(action: {
+            clearRecentVisible = true
+        }, label: {
+            Text("ClearRecent")
+                .frame(maxWidth: .infinity, alignment: .leading)
+        })
+        .buttonStyle(ThemeButtonStyle())
         .alert("ClearRecent", isPresented: $clearRecentVisible, actions: {
             Button("Cancel", role: .cancel, action: {})
             Button("Clear", role: .destructive, action: {
@@ -103,6 +113,13 @@ private struct ToolsSection: View {
         }, message: {
             Text("ClearRecentMessage")
         })
+        Button(action: {
+            resetTonalityVisible = true
+        }, label: {
+            Text("ResetTonality")
+                .frame(maxWidth: .infinity, alignment: .leading)
+        })
+        .buttonStyle(ThemeButtonStyle())
         .alert("ResetTonality", isPresented: $resetTonalityVisible, actions: {
             Button("Cancel", role: .cancel, action: {})
             Button("Reset", role: .destructive, action: {
@@ -114,6 +131,13 @@ private struct ToolsSection: View {
         }, message: {
             Text("ResetTonalityMessage")
         })
+        Button(action: {
+            resetZoomVisible = true
+        }, label: {
+            Text("ResetZoom")
+                .frame(maxWidth: .infinity, alignment: .leading)
+        })
+        .buttonStyle(ThemeButtonStyle())
         .alert("ResetZoom", isPresented: $resetZoomVisible, actions: {
             Button("Cancel", role: .cancel, action: {})
             Button("Reset", role: .destructive, action: {
@@ -133,30 +157,46 @@ private struct ToolsSection: View {
 private struct AppSection: View {
 
     var body: some View {
-        Section("App") {
-            NavigationLink("Information") {
-                InformationView()
+        Text("App")
+            .modifier(ThemeTitleModifier())
+        NavigationLink(destination: {
+            InformationView()
+        }, label: {
+            HStack {
+                Text("Information")
+                Spacer()
+                Image(systemName: "chevron.right")
             }
-            NavigationLink(destination: {
-                LicenseView()
-            }, label: {
+        })
+        .buttonStyle(ThemeButtonStyle())
+        NavigationLink(destination: {
+            LicenseView()
+        }, label: {
+            HStack {
                 VStack(alignment: .leading) {
                     Text("License")
                     Text("LicenseShort")
                         .font(.caption)
                 }
-            })
-            NavigationLink(destination: {
-                VersionsView()
-            }, label: {
+                Spacer()
+                Image(systemName: "chevron.right")
+            }
+        })
+        .buttonStyle(ThemeButtonStyle())
+        NavigationLink(destination: {
+            VersionsView()
+        }, label: {
+            HStack {
                 VStack(alignment: .leading) {
                     Text("Version")
                     Text(Version.CURRENT)
                         .font(.caption)
                 }
-            })
-        }
-        .listRowBackground(ListBackground())
+                Spacer()
+                Image(systemName: "chevron.right")
+            }
+        })
+        .buttonStyle(ThemeButtonStyle())
     }
 }
 

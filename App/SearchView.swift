@@ -9,8 +9,11 @@ import SwiftUI
 
 
 struct SearchView: View {
+    
     @State private var state: SearchState?
     private let isPreview: Bool
+    
+    @ScaledMetric private var spacing: Double = smallMargin
     
     init() {
         self.state = nil
@@ -37,20 +40,22 @@ struct SearchView: View {
                         )
                     }
             } else {
-                List {
-                    if state!.query.isEmpty {
-                        DestinationsSection(
-                            updateCheck: state!.updateCheck,
-                            isPreview: isPreview,
-                        )
-                    }
-                    Section("Results") {
+                ScrollView {
+                    LazyVStack(alignment: .leading, spacing: spacing) {
+                        if state!.query.isEmpty {
+                            DestinationsSection(
+                                updateCheck: state!.updateCheck,
+                                isPreview: isPreview,
+                            )
+                        }
+                        Text("Results")
+                            .modifier(ThemeTitleModifier())
                         ForEach(state!.resultList) { result in
-                            ResultRow(result: result, isPreview: isPreview)
+                            ThemeResultButton(result: result, isPreview: isPreview)
                         }
                     }
+                    .padding(outerPadding)
                 }
-                .scrollContentBackground(.hidden)
                 .searchable(text: $state.bindQuery(isPreview: isPreview), prompt: "Search")
                 .task {
                     if isPreview { return }
@@ -70,7 +75,7 @@ struct SearchView: View {
         }
         .navigationTitle("AppName")
         .toolbar {
-            HomeToolbarContent(isPreview: isPreview)
+            MainToolbarContent(isPreview: isPreview)
         }
         .analyticsScreen(name: String(localized: "Search"), class: "/search/")
     }
@@ -82,45 +87,56 @@ private struct DestinationsSection: View {
     let isPreview: Bool
     
     var body: some View {
-        Section("Destinations") {
-            NavigationLink(destination: {
-                if isPreview {
-                    EmptyView()
-                } else {
-                    StarredView()
-                }
-            }, label: {
-                Label("Starred", systemImage: "star")
-            })
-            // TODO system image availability
-            NavigationLink(destination: {
-                if isPreview {
-                    EmptyView()
-                } else {
-                    RecentView()
-                }
-            }, label: {
-                Label("Recent", systemImage: "clock.arrow.trianglehead.counterclockwise.rotate.90")
-            })
-            if updateCheck {
-                NavigationLink(destination: {
-                    if isPreview {
-                        EmptyView()
-                    } else {
-                        UpdateView()
-                    }
-                }, label: {
-                    HStack {
-                        Label("Update", systemImage: "arrow.trianglehead.2.clockwise.rotate.90")
-                        Spacer()
-                        Image(systemName: "smallcircle.filled.circle.fill")
-                            .foregroundStyle(.badge)
-                    }
-                })
+        Text("Destinations")
+            .modifier(ThemeTitleModifier())
+        NavigationLink(destination: {
+            if isPreview {
+                EmptyView()
+            } else {
+                StarredView()
             }
+        }, label: {
+            HStack {
+                Image(systemName: StarredView.systemImage)
+                Text("Starred")
+                Spacer()
+                Image(systemName: "chevron.right")
+            }
+        })
+        .buttonStyle(ThemeButtonStyle())
+        NavigationLink(destination: {
+            if isPreview {
+                EmptyView()
+            } else {
+                RecentView()
+            }
+        }, label: {
+            HStack {
+                Image(systemName: RecentView.systemImage)
+                Text("Recent")
+                Spacer()
+                Image(systemName: "chevron.right")
+            }
+        })
+        .buttonStyle(ThemeButtonStyle())
+        if updateCheck {
+            NavigationLink(destination: {
+                if isPreview {
+                    EmptyView()
+                } else {
+                    UpdateView()
+                }
+            }, label: {
+                HStack {
+                    Label("Update", systemImage: UpdateView.systemImage)
+                    Spacer()
+                    Image(systemName: "smallcircle.filled.circle.fill")
+                        .foregroundStyle(.badge)
+                    Image(systemName: "chevron.right")
+                }
+            })
+            .buttonStyle(ThemeButtonStyle())
         }
-        .labelStyle(.titleAndIcon)
-        .listRowBackground(ListBackground())
     }
 }
 

@@ -1,6 +1,6 @@
 //
 //  TheAnalytics.swift
-//  App
+//  Christianika Tragoudia iOS
 //
 //  Created by Konstantinos Raktivan on 28-05-2025.
 //

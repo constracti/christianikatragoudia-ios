@@ -22,6 +22,8 @@ struct WelcomeView: View {
     
     @State private var errorVisible: Bool = false
     
+    @ScaledMetric private var spacing: Double = largeMargin
+    
     init(passed: Binding<Bool>) {
         self._passed = passed
         self.state = .start
@@ -47,16 +49,15 @@ struct WelcomeView: View {
                         state = .ready
                     }
             case .ready:
-                VStack {
+                VStack(spacing: spacing) {
                     Text("DownloadPrompt")
                         .multilineTextAlignment(.center)
-                        .padding()
                     Button("Download", systemImage: "square.and.arrow.down", action: {
                         state = .download
                     })
                     .buttonStyle(.borderedProminent)
-                    .padding()
                 }
+                .padding(outerPadding)
                 .analyticsScreen(name: String(localized: "Welcome"), class: "/welcome/")
             case .download:
                 ProgressView()

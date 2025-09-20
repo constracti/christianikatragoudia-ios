@@ -561,6 +561,22 @@
         }
       }
     },
+    "RecentEmpty" : {
+      "localizations" : {
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Εδώ εμφανίζονται τα τραγούδια που άνοιξες πιο πρόσφατα."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The songs you opened most recently appear here."
+          }
+        }
+      }
+    },
     "Reset" : {
       "localizations" : {
         "el" : {
@@ -717,6 +733,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Starred"
+          }
+        }
+      }
+    },
+    "StarredEmpty" : {
+      "localizations" : {
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Πρόσθεσε τραγούδια στα αγαπημένα για να εμφανίζονται εδώ."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add songs to starred to appear here."
           }
         }
       }
