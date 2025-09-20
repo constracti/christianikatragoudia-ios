@@ -16,9 +16,9 @@ struct StarredView: View {
     
     static let systemImage: String = "star"
     
-    init() {
+    init(isPreview: Bool) {
         self.resultList = nil
-        self.isPreview = false
+        self.isPreview = isPreview
     }
     
     fileprivate init(resultList: [SongTitle]?) {

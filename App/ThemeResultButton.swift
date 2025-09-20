@@ -14,11 +14,7 @@ struct ThemeResultButton: View {
     
     var body: some View {
         NavigationLink(destination: {
-            if isPreview {
-                EmptyView()
-            } else {
-                SongView(id: result.id)
-            }
+            SongView(id: result.id, isPreview: isPreview)
         }, label: {
             HStack {
                 VStack(alignment: .leading) {

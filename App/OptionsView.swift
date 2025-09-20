@@ -13,11 +13,7 @@ struct OptionsView: View {
     
     @ScaledMetric private var spacing: Double = smallMargin
     
-    init() {
-        self.isPreview = false
-    }
-    
-    fileprivate init(isPreview: Bool) {
+    init(isPreview: Bool) {
         self.isPreview = isPreview
     }
     
@@ -46,11 +42,7 @@ private struct SettingsSection: View {
         Text("Settings")
             .modifier(ThemeTitleModifier())
         NavigationLink(destination: {
-            if isPreview {
-                EmptyView()
-            } else {
-                TonalitiesView()
-            }
+            TonalitiesView(isPreview: isPreview)
         }, label: {
             HStack {
                 VStack(alignment: .leading) {
@@ -78,11 +70,7 @@ private struct ToolsSection: View {
         Text("Tools")
             .modifier(ThemeTitleModifier())
         NavigationLink(destination: {
-            if isPreview {
-                EmptyView()
-            } else {
-                UpdateView()
-            }
+            UpdateView(isPreview: isPreview)
         }, label: {
             HStack {
                 VStack(alignment: .leading) {

@@ -15,9 +15,9 @@ struct SearchView: View {
     
     @ScaledMetric private var spacing: Double = smallMargin
     
-    init() {
+    init(isPreview: Bool) {
         self.state = nil
-        self.isPreview = false
+        self.isPreview = isPreview
     }
     
     fileprivate init(state: SearchState?) {
@@ -90,11 +90,7 @@ private struct DestinationsSection: View {
         Text("Destinations")
             .modifier(ThemeTitleModifier())
         NavigationLink(destination: {
-            if isPreview {
-                EmptyView()
-            } else {
-                StarredView()
-            }
+            StarredView(isPreview: isPreview)
         }, label: {
             HStack {
                 Image(systemName: StarredView.systemImage)
@@ -105,11 +101,7 @@ private struct DestinationsSection: View {
         })
         .buttonStyle(ThemeButtonStyle())
         NavigationLink(destination: {
-            if isPreview {
-                EmptyView()
-            } else {
-                RecentView()
-            }
+            RecentView(isPreview: isPreview)
         }, label: {
             HStack {
                 Image(systemName: RecentView.systemImage)
@@ -121,11 +113,7 @@ private struct DestinationsSection: View {
         .buttonStyle(ThemeButtonStyle())
         if updateCheck {
             NavigationLink(destination: {
-                if isPreview {
-                    EmptyView()
-                } else {
-                    UpdateView()
-                }
+                UpdateView(isPreview: isPreview)
             }, label: {
                 HStack {
                     Label("Update", systemImage: UpdateView.systemImage)

@@ -22,9 +22,9 @@ struct RecentView: View {
         }
     }
 
-    init() {
+    init(isPreview: Bool) {
         self.resultList = nil
-        self.isPreview = false
+        self.isPreview = isPreview
     }
     
     fileprivate init(resultList: [SongTitle]?) {

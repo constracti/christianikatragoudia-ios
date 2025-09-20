@@ -14,11 +14,7 @@ struct MainToolbarContent: ToolbarContent {
     var body: some ToolbarContent {
         ToolbarItemGroup(placement: .topBarTrailing) {
             NavigationLink(destination: {
-                if isPreview {
-                    EmptyView()
-                } else {
-                    OptionsView()
-                }
+                OptionsView(isPreview: isPreview)
             }, label: {
                 Label("Options", systemImage: "gearshape")
             })
@@ -29,9 +25,7 @@ struct MainToolbarContent: ToolbarContent {
 
 #Preview {
     NavigationStack {
-        ZStack {
-            BackgroundView()
-        }
+        BackgroundView()
         .navigationTitle("AppName")
         .toolbar {
             MainToolbarContent(isPreview: true)

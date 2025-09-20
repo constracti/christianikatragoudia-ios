@@ -8,8 +8,6 @@
 import SwiftUI
 
 
-// TODO make isPreview public
-
 @main
 struct TheApp: App {
     
@@ -21,9 +19,9 @@ struct TheApp: App {
         WindowGroup {
             NavigationStack {
                 if passed {
-                    SearchView()
+                    SearchView(isPreview: false)
                 } else {
-                    WelcomeView(passed: $passed)
+                    WelcomeView(passed: $passed, isPreview: false)
                 }
             }
         }

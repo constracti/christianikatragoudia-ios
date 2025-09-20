@@ -14,9 +14,9 @@ struct TonalitiesView: View {
     
     @ScaledMetric private var spacing: Double = smallMargin
     
-    init() {
+    init(isPreview: Bool) {
         self.hiddenTonalities = nil
-        self.isPreview = false
+        self.isPreview = isPreview
     }
     
     fileprivate init(hiddenTonalities: Set<MusicNote>?) {

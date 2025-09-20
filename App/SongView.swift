@@ -95,9 +95,9 @@ struct SongView: View {
     @State private var viewState: ViewState
     private let isPreview: Bool
     
-    init(id: Int) {
+    init(id: Int, isPreview: Bool) {
         self.viewState = .start(id)
-        self.isPreview = false
+        self.isPreview = isPreview
     }
     
     fileprivate init(viewState: ViewState) {
@@ -263,7 +263,6 @@ private struct LyricsView: View {
                 let paragraphList = song.content.split(
                     separator: /(?:\r\n|\r|\n){2,}/,
                 )
-                // TODO separate paragraphs in view by native newline
                 ForEach(Array(paragraphList.enumerated()), id: \.offset) { _, html in
                     if html == "<hr />" {
                         Divider()
@@ -300,7 +299,6 @@ private struct ChordsView: View {
         GeometryReader { geometry in
             ScrollView([.horizontal, .vertical]) {
                 VStack(alignment: .leading) {
-                    // TODO use markdown
                     let interval = MusicInterval(src: chord.tonality, dst: tonality)
                     let lineList = chord.content.split(
                         separator: /\r\n|\r|\n/,
@@ -416,9 +414,7 @@ private struct TonalityMenu: View {
                     }) ?? String(localized: "TonalityNull")
                     Text(text)
                 }
-            }, label: {
-                EmptyView()
-            })
+            }, label: {})
         }, label: {
             let text = String(localized: "TonalitySelect")
                 .appending(tonality.map({ tonality in

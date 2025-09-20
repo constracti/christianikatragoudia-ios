@@ -69,9 +69,9 @@ struct UpdateView: View {
         }
     }
     
-    init() {
+    init(isPreview: Bool) {
         self.state = .check
-        self.isPreview = false
+        self.isPreview = isPreview
     }
     
     fileprivate init(state: ViewState) {

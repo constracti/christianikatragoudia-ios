@@ -24,10 +24,10 @@ struct WelcomeView: View {
     
     @ScaledMetric private var spacing: Double = largeMargin
     
-    init(passed: Binding<Bool>) {
+    init(passed: Binding<Bool>, isPreview: Bool) {
         self._passed = passed
         self.state = .start
-        self.isPreview = false
+        self.isPreview = isPreview
     }
     
     fileprivate init(passed: Binding<Bool>, state: ViewState) {
