@@ -19,8 +19,8 @@ class SongFts {
     
     init(song: Song) {
         self.rowid = song.id
-        self.title = SongFts.tokenize(inString: song.title)
-        self.content = SongFts.tokenize(inString: song.content)
+        self.title = SongFts.tokenize(value: song.title)
+        self.content = SongFts.tokenize(value: song.content)
     }
     
     static func create(db: TheDatabase) {
@@ -95,25 +95,33 @@ class SongFts {
         stmt.stepDone()
     }
     
-    static func tokenize(inString: String) -> String {
-        var outString = inString.localizedLowercase
-        outString = outString.replacing(/<[^>]*>/, with: " ")
-        outString = outString.decomposedStringWithCanonicalMapping.unicodeScalars.reduce("", { acc, scalar in
-            var ret = acc
-            switch scalar.properties.generalCategory {
-            case .lowercaseLetter,
-                    .decimalNumber:
-                ret.unicodeScalars.append(scalar)
-            case .nonspacingMark:
-                break
-            default:
-                ret.unicodeScalars.append(" ")
-            }
-            return ret
-        })
-        outString = outString.replacing(/\s+/, with: " ")
-        outString = outString.trimmingCharacters(in: .whitespacesAndNewlines)
-        return outString
+    static func tokenize(value: String) -> String {
+        value
+            .localizedLowercase
+            .replacing(/<[^>]*>/, with: " ")
+            .decomposedStringWithCanonicalMapping
+            .unicodeScalars
+            .map({ scalar in
+                switch scalar {
+                case Unicode.Scalar(0x03c2)!: // small final sigma
+                    Unicode.Scalar(0x03c3)! // small sigma
+                default:
+                    scalar
+                }
+            })
+            .reduce(into: "", { result, scalar in
+                switch scalar.properties.generalCategory {
+                case .lowercaseLetter,
+                        .decimalNumber:
+                    result.unicodeScalars.append(scalar)
+                case .nonspacingMark:
+                    break
+                default:
+                    result.unicodeScalars.append(" ")
+                }
+            })
+            .replacing(/\s+/, with: " ")
+            .trimmingCharacters(in: .whitespacesAndNewlines)
     }
     
     static func getColumnWeight(columnIndex: Int) -> Double {

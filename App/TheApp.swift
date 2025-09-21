@@ -19,7 +19,7 @@ struct TheApp: App {
         WindowGroup {
             NavigationStack {
                 if passed {
-                    SearchView(isPreview: false)
+                    HomeView(isPreview: false)
                 } else {
                     WelcomeView(passed: $passed, isPreview: false)
                 }

@@ -89,9 +89,25 @@ class SongMatch: Comparable {
             JOIN `chord` ON `chord`.`parent` = `song`.`id`
             WHERE `song_fts` MATCH ?
             """
+        let tokenList = SongFts.tokenize(value: query)
+            .split(separator: " ")
+        guard tokenList.count > 0 else { return [] }
+        // limit to (1 + 2 + 3) * 2 = 12 terms
+        let maxLength = tokenList.count
+        let minLength = max(maxLength - 2, 1)
+        var termList: [String] = []
+        for length in minLength...maxLength {
+            for start in 0...(tokenList.count - length) {
+                let stop = start + length
+                let subList = tokenList[start..<stop]
+                termList.append(subList.joined(separator: " "))
+                termList.append(subList.map({ "\($0)*" }).joined(separator: " "))
+            }
+        }
+        let expr = termList.map({ "\"\($0)\"" }).joined(separator: " OR ")
         var list = [SongMatch]()
         let stmt = Statement(db: db, sql: sql)
-        stmt.bindString(index: 1, value: query)
+        stmt.bindString(index: 1, value: expr)
         while stmt.step() == .ROW {
             list.append(SongMatch(stmt: stmt))
         }

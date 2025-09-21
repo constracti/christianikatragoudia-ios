@@ -2,139 +2,109 @@
 //  SearchView.swift
 //  Christianika Tragoudia iOS
 //
-//  Created by Konstantinos Raktivan on 03-05-2025.
+//  Created by Konstantinos Raktivan on 21-09-2025.
 //
 
 import SwiftUI
 
 
+private struct ViewState {
+    let query: String
+    let resultList: [SongTitle]
+    
+    init() {
+        self.query = ""
+        self.resultList = []
+    }
+
+    init(query: String, resultList: [SongTitle]) {
+        self.query = query
+        self.resultList = resultList
+    }
+
+    init(db: TheDatabase, query: String) {
+        self.query = query
+        self.resultList = SongMatch
+            .getByQuery(db: db, query: query)
+            .map { SongTitle(songMatch: $0) }
+    }
+}
+
+
+extension Binding<ViewState> {
+
+    func bindQuery(isPreview: Bool) -> Binding<String> {
+        Binding<String>(
+            get: {
+                wrappedValue.query
+            },
+            set: { query in
+                if query == wrappedValue.query { return }
+                if isPreview { return }
+                wrappedValue = ViewState(db: TheDatabase(), query: query)
+            },
+        )
+    }
+}
+
 struct SearchView: View {
     
-    @State private var state: SearchState?
+    @State private var viewState: ViewState
     private let isPreview: Bool
     
     @ScaledMetric private var spacing: Double = smallMargin
     
+    @FocusState var focus: Bool
+    
     init(isPreview: Bool) {
-        self.state = nil
+        self.viewState = ViewState()
         self.isPreview = isPreview
     }
     
-    fileprivate init(state: SearchState?) {
-        self.state = state
+    fileprivate init(viewState: ViewState) {
+        self.viewState = viewState
         self.isPreview = true
     }
     
     var body: some View {
         ZStack {
             BackgroundView()
-            if state == nil {
-                ProgressView()
-                    .task {
-                        if isPreview { return }
-                        let db = TheDatabase()
-                        state = SearchState(
-                            db: db,
-                            query: "",
-                            updateCheck: SearchState.cachedUpdateCheck(db: db),
-                        )
-                    }
-            } else {
-                ScrollView {
-                    LazyVStack(alignment: .leading, spacing: spacing) {
-                        if state!.query.isEmpty {
-                            DestinationsSection(
-                                updateCheck: state!.updateCheck,
-                                isPreview: isPreview,
-                            )
+            VStack(spacing: spacing) {
+                HStack(spacing: spacing) {
+                    TextField("Search", text: $viewState.bindQuery(isPreview: isPreview))
+                        .focused($focus)
+                        .autocorrectionDisabled()
+                        .onAppear {
+                            focus = true
                         }
-                        Text("Results")
-                            .modifier(ThemeTitleModifier())
-                        ForEach(state!.resultList) { result in
+                    Button(action: {
+                        viewState = ViewState()
+                    }, label: {
+                        Image(systemName: "multiply")
+                    })
+                    .disabled(viewState.query.isEmpty)
+                }
+                .padding(spacing)
+                .background(.backgroundDefault)
+                .clipShape(RoundedRectangle(cornerRadius: spacing))
+                ScrollView {
+                    LazyVStack(spacing: spacing) {
+                        ForEach(viewState.resultList) { result in
                             ThemeResultButton(result: result, isPreview: isPreview)
                         }
                     }
-                    .padding(outerPadding)
-                }
-                .searchable(text: $state.bindQuery(isPreview: isPreview), prompt: "Search")
-                .task {
-                    if isPreview { return }
-                    let db = TheDatabase()
-                    let updateCheck = SearchState.cachedUpdateCheck(db: db)
-                    state = SearchState(
-                        db: db,
-                        query: state!.query,
-                        updateCheck: updateCheck,
-                    )
-                    if updateCheck { return }
-                    if await !SearchState.serverUpdateCheck(db: db) { return }
-                    Config.setUpdateCheck(db: db, value: true)
-                    state = state!.copyWithUpdateCheck(updateCheck: true)
                 }
             }
+            .padding(outerPadding)
         }
-        .navigationTitle("AppName")
-        .toolbar {
-            MainToolbarContent(isPreview: isPreview)
-        }
+        .navigationTitle("Search")
         .analyticsScreen(name: String(localized: "Search"), class: "/search/")
-    }
-}
-
-
-private struct DestinationsSection: View {
-    let updateCheck: Bool
-    let isPreview: Bool
-    
-    var body: some View {
-        Text("Destinations")
-            .modifier(ThemeTitleModifier())
-        NavigationLink(destination: {
-            StarredView(isPreview: isPreview)
-        }, label: {
-            HStack {
-                Image(systemName: StarredView.systemImage)
-                Text("Starred")
-                Spacer()
-                Image(systemName: "chevron.right")
-            }
-        })
-        .buttonStyle(ThemeButtonStyle())
-        NavigationLink(destination: {
-            RecentView(isPreview: isPreview)
-        }, label: {
-            HStack {
-                Image(systemName: RecentView.systemImage)
-                Text("Recent")
-                Spacer()
-                Image(systemName: "chevron.right")
-            }
-        })
-        .buttonStyle(ThemeButtonStyle())
-        if updateCheck {
-            NavigationLink(destination: {
-                UpdateView(isPreview: isPreview)
-            }, label: {
-                HStack {
-                    Label("Update", systemImage: UpdateView.systemImage)
-                    Spacer()
-                    Image(systemName: "smallcircle.filled.circle.fill")
-                        .foregroundStyle(.badge)
-                    Image(systemName: "chevron.right")
-                }
-            })
-            .buttonStyle(ThemeButtonStyle())
-        }
     }
 }
 
 
 #Preview {
     NavigationStack {
-        SearchView(state: SearchState(
-            query: "",
-            resultList: Demo.resultList,
-            updateCheck: true,
-        ))
+        SearchView(viewState: ViewState(query: "", resultList: Demo.resultList))
     }
 }

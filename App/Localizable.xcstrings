@@ -305,6 +305,22 @@
         }
       }
     },
+    "Index" : {
+      "localizations" : {
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Κατάλογος"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Index"
+          }
+        }
+      }
+    },
     "Information" : {
       "localizations" : {
         "el" : {
@@ -653,22 +669,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Reset lyrics and chords font size in all songs."
-          }
-        }
-      }
-    },
-    "Results" : {
-      "localizations" : {
-        "el" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Αποτελέσματα"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Results"
           }
         }
       }

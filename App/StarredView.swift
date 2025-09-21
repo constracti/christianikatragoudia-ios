@@ -45,16 +45,13 @@ struct StarredView: View {
                 }
             } else {
                 ProgressView()
+                    .task {
+                        if isPreview { return }
+                        resultList = SongTitle.getStarred(db: TheDatabase())
+                    }
             }
         }
         .navigationTitle("Starred")
-        .toolbar {
-            MainToolbarContent(isPreview: isPreview)
-        }
-        .task {
-            if isPreview { return }
-            resultList = SongTitle.getStarred(db: TheDatabase())
-        }
         .analyticsScreen(name: String(localized: "Starred"), class: "/starred/")
     }
 }

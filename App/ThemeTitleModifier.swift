@@ -16,6 +16,7 @@ struct ThemeTitleModifier: ViewModifier {
         content
             .textCase(.uppercase)
             .foregroundStyle(.accent)
+            .font(.callout)
             .padding(.horizontal, indent)
     }
 }

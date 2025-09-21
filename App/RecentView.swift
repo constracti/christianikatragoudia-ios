@@ -51,16 +51,13 @@ struct RecentView: View {
                 }
             } else {
                 ProgressView()
+                    .task {
+                        if isPreview { return }
+                        resultList = SongTitle.getRecent(db: TheDatabase())
+                    }
             }
         }
         .navigationTitle("Recent")
-        .toolbar {
-            MainToolbarContent(isPreview: isPreview)
-        }
-        .task {
-            if isPreview { return }
-            resultList = SongTitle.getRecent(db: TheDatabase())
-        }
         .analyticsScreen(name: String(localized: "Recent"), class: "/recent/")
     }
 }
