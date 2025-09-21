@@ -226,6 +226,7 @@ private struct MainView: View {
                 LyricsView(song: song, zoom: songMeta.zoom)
             }
         }
+        .navigationTitle(song.title)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             MainToolbar(
@@ -348,6 +349,7 @@ private struct MainToolbar: ToolbarContent {
         ToolbarItem(placement: .principal) {
             Text(song.title)
                 .lineLimit(2)
+                .multilineTextAlignment(.center)
                 .font(.headline)
         }
         ToolbarItem(placement: .topBarTrailing) {

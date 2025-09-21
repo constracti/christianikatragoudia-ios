@@ -94,7 +94,7 @@ struct HomeView: View {
                     }
             }
         }
-        .navigationTitle("AppName") // TODO greek title overflows
+        .navigationTitle("AppName")
         .toolbar {
             ToolbarItemGroup(placement: .topBarTrailing) {
                 NavigationLink(destination: {
